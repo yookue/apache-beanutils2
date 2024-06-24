@@ -1,0 +1,566 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-parent</artifactId>
+    <version>59</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.yookue.forkextension.apache</groupId>
+  <artifactId>commons-beanutils2</artifactId>
+  <version>2.0.0</version>
+  <name>Commons BeanUtils</name>
+
+  <inceptionYear>2000</inceptionYear>
+  <description>Apache Commons BeanUtils provides an easy-to-use but flexible wrapper around reflection and introspection.</description>
+  <url>https://commons.apache.org/proper/commons-beanutils/</url>
+
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.test.skip>true</maven.test.skip>
+    <commons.componentid>beanutils</commons.componentid>
+    <commons.module.name>org.apache.commons.beanutils2</commons.module.name>
+    <!-- Current version -->
+    <commons.release.version>2.0.0</commons.release.version>
+    <commons.release.desc>(Java 8)</commons.release.desc>
+    <!-- Previous major version -->
+    <commons.release.2.version>1.9.4</commons.release.2.version>
+    <commons.release.2.desc>(Java 6)</commons.release.2.desc>
+    <!-- override parent name, because 1.x uses different artifactId -->
+    <commons.release.2.name>commons-beanutils-${commons.release.2.version}</commons.release.2.name>
+
+    <commons.jira.id>BEANUTILS</commons.jira.id>
+    <commons.jira.pid>12310460</commons.jira.pid>
+    <!-- limit memory size see BEANUTILS-291; allow command-line override -->
+    <!-- Originally 25M, increased to 56M to get round Continuum CI / Travis CI build failures -->
+    <surefire.argLine>-Xmx256M</surefire.argLine>
+    <commons.encoding>utf-8</commons.encoding>
+    <!-- Commons Release Plugin -->
+    <commons.bc.version>2.0.0-SNAPSHOT</commons.bc.version>
+    <commons.release.isDistModule>true</commons.release.isDistModule>
+    <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>
+    <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
+    <!-- Temp until commons-parent 59, fixes GHA build somehow? -->
+    <commons.felix.version>5.1.9</commons.felix.version>
+    <commons.biz.aQute.bndlib.version>6.4.1</commons.biz.aQute.bndlib.version>
+
+    <!-- David Hsing added on 20240623 -->
+    <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
+    <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+    <central-publishing-maven-plugin.version>0.5.0</central-publishing-maven-plugin.version>
+  </properties>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>https://issues.apache.org/jira/browse/BEANUTILS</url>
+  </issueManagement>
+
+  <scm>
+    <url>https://github.com/yookue/apache-beanutils2</url>
+    <connection>scm:git:https://github.com/yookue/apache-beanutils2.git</connection>
+    <developerConnection>scm:git:https://github.com/yookue/apache-beanutils2.git</developerConnection>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Robert Burrell Donkin</name>
+      <id>rdonkin</id>
+      <email>rdonkin@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Dion Gillard</name>
+      <id>dion</id>
+      <email>dion@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Craig McClanahan</name>
+      <id>craigmcc</id>
+      <email>craigmcc@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Geir Magnusson Jr.</name>
+      <id>geirm</id>
+      <email>geirm@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Scott Sanders</name>
+      <id>sanders</id>
+      <email>sanders@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>James Strachan</name>
+      <id>jstrachan</id>
+      <email>jstrachan@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Rodney Waldhoff</name>
+      <id>rwaldhoff</id>
+      <email>rwaldhoff@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Martin van den Bemt</name>
+      <id>mvdb</id>
+      <email>mvdb@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Yoav Shapira</name>
+      <id>yoavs</id>
+      <email>yoavs@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Niall Pemberton</name>
+      <id>niallp</id>
+      <email>niallp@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Simon Kitching</name>
+      <id>skitching</id>
+      <email>skitching@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>James Carman</name>
+      <id>jcarman</id>
+      <email>jcarman@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Benedikt Ritter</name>
+      <id>britter</id>
+      <email>britter@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Tim O'Brien</name>
+      <id>tobrien</id>
+      <email>tobrien@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>David Eric Pugh</name>
+      <id>epugh</id>
+      <email>epugh@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Rodney Waldhoff</name>
+      <id>rwaldhoff</id>
+      <email>rwaldhoff@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Morgan James Delagrange</name>
+      <id>morgand</id>
+      <email>morgand@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>John E. Conlon</name>
+      <id>jconlon</id>
+      <email>jconlon@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <name>Stephen Colebourne</name>
+      <id>scolebourne</id>
+      <email>scolebourne@apache.org</email>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+    <developer>
+      <id>ggregory</id>
+      <name>Gary Gregory</name>
+      <email>ggregory at apache.org</email>
+      <url>https://www.garygregory.com</url>
+      <organization>The Apache Software Foundation</organization>
+      <organizationUrl>https://www.apache.org/</organizationUrl>
+      <roles>
+        <role>PMC Member</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+      <properties>
+        <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <id>stain</id>
+      <name>Stian Soiland-Reyes</name>
+      <email>stain@apache.org</email>
+      <url>http://orcid.org/0000-0001-9842-9718</url>
+      <timezone>+0</timezone>
+      <organization>The Apache Software Foundation</organization>
+    </developer>
+  </developers>
+
+  <contributors>
+    <contributor>
+      <name>Paul Jack</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Stephen Colebourne</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Berin Loritsch</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Alex Crown</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Marcus Zander</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Paul Hamamnt</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Rune Johannesen</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Clebert Suconic</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Norm Deane</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Ralph Schaer</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Chris Audley</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Rey François</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Gregor Raýman</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Jan Sorensen</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Eric Pabst</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Paulo Gaspar</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Michael Smith</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>George Franciscus</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Erik Meade</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Tomas Viberg</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Yauheny Mikulski</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Michael Szlapa</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Juozas Baliuka</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Tommy Tynjä</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Bernhard Seebass</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Raviteja Lokineni</name>
+      <email />
+    </contributor>
+    <contributor>
+      <name>Bernhard Seebass</name>
+      <email />
+    </contributor>
+  </contributors>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.12.0</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections-testframework</artifactId>
+      <version>3.2.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>clean apache-rat:check checkstyle:check verify javadoc:javadoc</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- limit memory size see BEANUTILS-291
+                     ..also include ${argLine} from jacoco-maven-plugin
+          -->
+          <!--suppress UnresolvedMavenProperty -->
+          <argLine>${surefire.argLine} ${argLine}</argLine>
+          <includes>
+            <include>**/*TestCase.java</include>
+          </includes>
+          <excludes>
+            <!-- This test case is known to fail, and there isn't any proposed fix
+              -  so we will just exclude it until someone comes up with a solution.
+            -->
+            <exclude>**/*MemoryTestCase.java</exclude>
+          </excludes>
+
+          <!-- Configure Logging -->
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <systemPropertyVariables>
+            <org.apache.commons.logging.LogFactory>org.apache.commons.logging.impl.LogFactoryImpl</org.apache.commons.logging.LogFactory>
+            <org.apache.commons.logging.Log>org.apache.commons.logging.impl.SimpleLog</org.apache.commons.logging.Log>
+            <org.apache.commons.logging.simplelog.defaultlog>WARN</org.apache.commons.logging.simplelog.defaultlog>
+          </systemPropertyVariables>
+
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/bin.xml</descriptor>
+            <descriptor>src/main/assembly/src.xml</descriptor>
+          </descriptors>
+          <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
+          <suppressionsLocation>${basedir}/src/conf/checkstyle-suppressions.xml</suppressionsLocation>
+          <includeTestSourceDirectory>false</includeTestSourceDirectory>
+          <enableRulesSummary>false</enableRulesSummary>
+          <resourceExcludes>NOTICE.txt,LICENSE.txt,**/pom.properties,target/**.properties,</resourceExcludes>
+        </configuration>
+      </plugin>
+      <!-- David Hsing added on 20240623 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <charset>UTF-8</charset>
+          <detectLinks>false</detectLinks>
+          <detectOfflineLinks>false</detectOfflineLinks>
+          <doclint>none</doclint>
+          <locale>en_US</locale>
+          <notimestamp>true</notimestamp>
+          <quiet>false</quiet>
+          <skip>false</skip>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+          <links>
+            <link>https://docs.oracle.com/javase/8/docs/api/</link>
+            <link>https://commons.apache.org/collections/api-release/</link>
+          </links>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>package</phase>
+            <goals>
+              <goal>javadoc</goal>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>${maven-gpg-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>${central-publishing-maven-plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <deploymentName>${project.artifactId}</deploymentName>
+          <autoPublish>true</autoPublish>
+          <checksums>required</checksums>
+          <publishingServerId>central</publishingServerId>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-publish-plugin</artifactId>
+          <configuration>
+            <!-- when moving to svnpubsub links to previous releases must be fixed -->
+            <!-- ignore paths manual content -->
+            <ignorePathsToDelete>
+              <ignorePathToDelete>javadocs**</ignorePathToDelete>
+              <ignorePathToDelete>release-notes**</ignorePathToDelete>
+            </ignorePathsToDelete>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgument>-Xlint:unchecked</compilerArgument>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
+          <suppressionsLocation>${basedir}/src/conf/checkstyle-suppressions.xml</suppressionsLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <enableRulesSummary>false</enableRulesSummary>
+          <resourceExcludes>NOTICE.txt,LICENSE.txt,README.txt,**/pom.properties,target/**.properties,</resourceExcludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <version>${commons.changes.version}</version>
+        <configuration>
+          <issueLinkTemplatePerSystem>
+            <default>%URL%/%ISSUE%</default>
+          </issueLinkTemplatePerSystem>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <targetJdk>${maven.compiler.target}</targetJdk>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <id>pmd-report</id>
+            <reports>
+              <report>pmd</report>
+            </reports>
+          </reportSet>
+          <reportSet>
+            <id>pmd-aggregate</id>
+            <inherited>false</inherited>
+            <reports>
+              <report>pmd</report>
+            </reports>
+            <configuration>
+              <aggregate>true</aggregate>
+            </configuration>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <threshold>Normal</threshold>
+          <effort>Default</effort>
+          <!-- <excludeFilterFile>src/conf/findbugs-exclude-filter.xml</excludeFilterFile> -->
+          <fork>true</fork>
+          <jvmArgs>-Duser.language=en</jvmArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>
