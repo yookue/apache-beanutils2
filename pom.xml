@@ -62,9 +62,9 @@
     <commons.biz.aQute.bndlib.version>6.4.1</commons.biz.aQute.bndlib.version>
 
     <!-- David Hsing added on 20240623 -->
-    <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
-    <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
-    <central-publishing-maven-plugin.version>0.5.0</central-publishing-maven-plugin.version>
+    <maven-javadoc-plugin.version>3.10.1</maven-javadoc-plugin.version>
+    <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
+    <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
   </properties>
 
   <issueManagement>
@@ -430,8 +430,8 @@
             </manifest>
           </archive>
           <links>
-            <link>https://docs.oracle.com/javase/8/docs/api/</link>
-            <link>https://commons.apache.org/collections/api-release/</link>
+            <link>https://docs.oracle.com/javase/8/docs/api</link>
+            <link>https://commons.apache.org/collections/api-release</link>
           </links>
         </configuration>
         <executions>
