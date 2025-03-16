@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -36,51 +37,30 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Utility methods for using Java Reflection APIs to facilitate generic
- * property getter and setter operations on Java objects.  Much of this
- * code was originally included in {@code BeanUtils}, but has been
- * separated because of the volume of code involved.
+ * Utility methods for using Java Reflection APIs to facilitate generic property getter and setter operations on Java objects. Much of this code was originally
+ * included in {@code BeanUtils}, but has been separated because of the volume of code involved.
  * <p>
- * In general, the objects that are examined and modified using these
- * methods are expected to conform to the property getter and setter method
- * naming conventions described in the JavaBeans Specification (Version 1.0.1).
- * No data type conversions are performed, and there are no usage of any
- * {@code PropertyEditor} classes that have been registered, although
- * a convenient way to access the registered classes themselves is included.
+ * In general, the objects that are examined and modified using these methods are expected to conform to the property getter and setter method naming
+ * conventions described in the JavaBeans Specification (Version 1.0.1). No data type conversions are performed, and there are no usage of any
+ * {@code PropertyEditor} classes that have been registered, although a convenient way to access the registered classes themselves is included.
  * <p>
- * For the purposes of this class, five formats for referencing a particular
- * property value of a bean are defined, with the <i>default</i> layout of an
- * identifying String in parentheses. However the notation for these formats
- * and how they are resolved is now (since BeanUtils 1.8.0) controlled by
- * the configured {@link Resolver} implementation:
+ * For the purposes of this class, five formats for referencing a particular property value of a bean are defined, with the <em>default</em> layout of an
+ * identifying String in parentheses. However the notation for these formats and how they are resolved is now (since BeanUtils 1.8.0) controlled by the
+ * configured {@link Resolver} implementation:
  * <ul>
- * <li><strong>Simple ({@code name})</strong> - The specified
- *     {@code name} identifies an individual property of a particular
- *     JavaBean.  The name of the actual getter or setter method to be used
- *     is determined using standard JavaBeans introspection, so that (unless
- *     overridden by a {@code BeanInfo} class, a property named "xyz"
- *     will have a getter method named {@code getXyz()} or (for boolean
- *     properties only) {@code isXyz()}, and a setter method named
- *     {@code setXyz()}.</li>
- * <li><strong>Nested ({@code name1.name2.name3})</strong> The first
- *     name element is used to select a property getter, as for simple
- *     references above.  The object returned for this property is then
- *     consulted, using the same approach, for a property getter for a
- *     property named {@code name2}, and so on.  The property value that
- *     is ultimately retrieved or modified is the one identified by the
- *     last name element.</li>
- * <li><strong>Indexed ({@code name[index]})</strong> - The underlying
- *     property value is assumed to be an array, or this JavaBean is assumed
- *     to have indexed property getter and setter methods.  The appropriate
- *     (zero-relative) entry in the array is selected.  {@code List}
- *     objects are now also supported for read/write.  You simply need to define
- *     a getter that returns the {@code List}</li>
- * <li><strong>Mapped ({@code name(key)})</strong> - The JavaBean
- *     is assumed to have an property getter and setter methods with an
- *     additional attribute of type {@code java.lang.String}.</li>
- * <li><strong>Combined ({@code name1.name2[index].name3(key)})</strong> -
- *     Combining mapped, nested, and indexed references is also
- *     supported.</li>
+ * <li><strong>Simple ({@code name})</strong> - The specified {@code name} identifies an individual property of a particular JavaBean. The name of the actual
+ * getter or setter method to be used is determined using standard JavaBeans introspection, so that (unless overridden by a {@code BeanInfo} class, a property
+ * named "xyz" will have a getter method named {@code getXyz()} or (for boolean properties only) {@code isXyz()}, and a setter method named
+ * {@code setXyz()}.</li>
+ * <li><strong>Nested ({@code name1.name2.name3})</strong> The first name element is used to select a property getter, as for simple references above. The
+ * object returned for this property is then consulted, using the same approach, for a property getter for a property named {@code name2}, and so on. The
+ * property value that is ultimately retrieved or modified is the one identified by the last name element.</li>
+ * <li><strong>Indexed ({@code name[index]})</strong> - The underlying property value is assumed to be an array, or this JavaBean is assumed to have indexed
+ * property getter and setter methods. The appropriate (zero-relative) entry in the array is selected. {@code List} objects are now also supported for
+ * read/write. You simply need to define a getter that returns the {@code List}</li>
+ * <li><strong>Mapped ({@code name(key)})</strong> - The JavaBean is assumed to have an property getter and setter methods with an additional attribute of type
+ * {@link String}.</li>
+ * <li><strong>Combined ({@code name1.name2[index].name3(key)})</strong> - Combining mapped, nested, and indexed references is also supported.</li>
  * </ul>
  *
  * @see Resolver
@@ -94,6 +74,7 @@ public class PropertyUtilsBean {
 
     /**
      * Gets the PropertyUtils bean instance.
+     *
      * @return The PropertyUtils bean instance
      */
     protected static PropertyUtilsBean getInstance() {
@@ -101,80 +82,65 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Converts an object to a list of objects. This method is used when dealing
-     * with indexed properties. It assumes that indexed properties are stored as
-     * lists of objects.
+     * Converts an object to a list of objects. This method is used when dealing with indexed properties. It assumes that indexed properties are stored as lists
+     * of objects.
      *
      * @param obj the object to be converted
      * @return the resulting list of objects
      */
+    @SuppressWarnings("unchecked")
     private static List<Object> toObjectList(final Object obj) {
-        @SuppressWarnings("unchecked")
-        final
         // indexed properties are stored in lists of objects
-        List<Object> list = (List<Object>) obj;
-        return list;
+        return (List<Object>) obj;
     }
+
     /**
-     * Converts an object to a map with property values. This method is used
-     * when dealing with mapped properties. It assumes that mapped properties
-     * are stored in a Map&lt;String, Object&gt;.
+     * Converts an object to a map with property values. This method is used when dealing with mapped properties. It assumes that mapped properties are stored
+     * in a Map&lt;String, Object&gt;.
      *
      * @param obj the object to be converted
      * @return the resulting properties map
      */
+    @SuppressWarnings("unchecked")
     private static Map<String, Object> toPropertyMap(final Object obj) {
-        @SuppressWarnings("unchecked")
-        final
         // mapped properties are stores in maps of type <String, Object>
-        Map<String, Object> map = (Map<String, Object>) obj;
-        return map;
+        return (Map<String, Object>) obj;
     }
 
     private Resolver resolver = new DefaultResolver();
 
     /**
-     * The cache of PropertyDescriptor arrays for beans we have already
-     * introspected, keyed by the java.lang.Class of this object.
+     * The cache of PropertyDescriptor arrays for beans we have already introspected, keyed by the java.lang.Class of this object.
      */
-    private final WeakFastHashMap<Class<?>, BeanIntrospectionData> descriptorsCache;
+    private final Map<Class<?>, BeanIntrospectionData> descriptorsCache;
 
-    private final WeakFastHashMap<Class<?>, Map> mappedDescriptorsCache;
+    private final Map<Class<?>, Map> mappedDescriptorsCache;
 
     /** The list with BeanIntrospector objects. */
     private final List<BeanIntrospector> introspectors;
 
     /** Base constructor */
     public PropertyUtilsBean() {
-        descriptorsCache = new WeakFastHashMap<>();
-        descriptorsCache.setFast(true);
-        mappedDescriptorsCache = new WeakFastHashMap<>();
-        mappedDescriptorsCache.setFast(true);
+        descriptorsCache = BeanUtils.createCache();
+        mappedDescriptorsCache = BeanUtils.createCache();
         introspectors = new CopyOnWriteArrayList<>();
         resetBeanIntrospectors();
     }
 
     /**
-     * Adds a {@code BeanIntrospector}. This object is invoked when the
-     * property descriptors of a class need to be obtained.
+     * Adds a {@code BeanIntrospector}. This object is invoked when the property descriptors of a class need to be obtained.
      *
-     * @param introspector the {@code BeanIntrospector} to be added (must
-     *        not be <b>null</b>
-     * @throws IllegalArgumentException if the argument is <b>null</b>
+     * @param introspector the {@code BeanIntrospector} to be added (must not be <strong>null</strong>
+     * @throws IllegalArgumentException if the argument is <strong>null</strong>
      * @since 1.9
      */
     public void addBeanIntrospector(final BeanIntrospector introspector) {
-        if (introspector == null) {
-            throw new IllegalArgumentException(
-                    "BeanIntrospector must not be null!");
-        }
-        introspectors.add(introspector);
+        introspectors.add(Objects.requireNonNull(introspector, "introspector"));
     }
 
     /**
-     * Clear any cached property descriptors information for all classes
-     * loaded by any class loaders.  This is useful in cases where class
-     * loaders are thrown away to implement class reloading.
+     * Clear any cached property descriptors information for all classes loaded by any class loaders. This is useful in cases where class loaders are thrown
+     * away to implement class reloading.
      */
     public void clearDescriptors() {
         descriptorsCache.clear();
@@ -183,48 +149,35 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * <p>Copy property values from the "origin" bean to the "destination" bean
-     * for all cases where the property names are the same (even though the
-     * actual getter and setter methods might have been customized via
-     * {@code BeanInfo} classes).  No conversions are performed on the
-     * actual property values -- it is assumed that the values retrieved from
-     * the origin bean are assignment-compatible with the types expected by
-     * the destination bean.</p>
+     * <p>
+     * Copy property values from the "origin" bean to the "destination" bean for all cases where the property names are the same (even though the actual getter
+     * and setter methods might have been customized via {@code BeanInfo} classes). No conversions are performed on the actual property values -- it is assumed
+     * that the values retrieved from the origin bean are assignment-compatible with the types expected by the destination bean.
+     * </p>
      *
-     * <p>If the origin "bean" is actually a {@code Map}, it is assumed
-     * to contain String-valued <strong>simple</strong> property names as the keys, pointing
-     * at the corresponding property values that will be set in the destination
-     * bean.<strong>Note</strong> that this method is intended to perform
-     * a "shallow copy" of the properties and so complex properties
-     * (for example, nested ones) will not be copied.</p>
+     * <p>
+     * If the origin "bean" is actually a {@code Map}, it is assumed to contain String-valued <strong>simple</strong> property names as the keys, pointing at
+     * the corresponding property values that will be set in the destination bean.<strong>Note</strong> that this method is intended to perform a "shallow copy"
+     * of the properties and so complex properties (for example, nested ones) will not be copied.
+     * </p>
      *
-     * <p>Note, that this method will not copy a List to a List, or an Object[]
-     * to an Object[]. It's specifically for copying JavaBean properties.</p>
+     * <p>
+     * Note, that this method will not copy a List to a List, or an Object[] to an Object[]. It's specifically for copying JavaBean properties.
+     * </p>
      *
      * @param dest Destination bean whose properties are modified
      * @param orig Origin bean whose properties are retrieved
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if the {@code dest} or
-     *  {@code orig} argument is null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if the {@code dest} or {@code orig} argument is null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public void copyProperties(final Object dest, final Object orig)
-            throws IllegalAccessException, InvocationTargetException,
+    public void copyProperties(final Object dest, final Object orig) throws IllegalAccessException, InvocationTargetException,
             // TODO BEFORE 2.0
             // MISMATCH between implementation and Javadoc.
-        NoSuchMethodException {
-        if (dest == null) {
-            throw new IllegalArgumentException("No destination bean specified");
-        }
-        if (orig == null) {
-            throw new IllegalArgumentException("No origin bean specified");
-        }
-
+            NoSuchMethodException {
+        Objects.requireNonNull(dest, "dest");
+        Objects.requireNonNull(orig, "orig");
         if (orig instanceof DynaBean) {
             final DynaProperty[] origDescriptors = ((DynaBean) orig).getDynaClass().getDynaProperties();
             for (final DynaProperty origDescriptor : origDescriptors) {
@@ -285,42 +238,33 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * <p>Return the entire set of properties for which the specified bean
-     * provides a read method.  This map contains the unconverted property
-     * values for all properties for which a read method is provided
-     * (i.e. where the {@code getReadMethod()} returns non-null).</p>
+     * <p>
+     * Return the entire set of properties for which the specified bean provides a read method. This map contains the unconverted property values for all
+     * properties for which a read method is provided (i.e. where the {@code getReadMethod()} returns non-null).
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not account for mapped properties.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not account for mapped properties.
+     * </p>
      *
      * @param bean Bean whose properties are to be extracted
      * @return The set of properties for the bean
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} is null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} is null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Map<String, Object> describe(final Object bean)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
+    public Map<String, Object> describe(final Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
         final Map<String, Object> description = new HashMap<>();
         if (bean instanceof DynaBean) {
-            final DynaProperty[] descriptors =
-                ((DynaBean) bean).getDynaClass().getDynaProperties();
+            final DynaProperty[] descriptors = ((DynaBean) bean).getDynaClass().getDynaProperties();
             for (final DynaProperty descriptor : descriptors) {
                 final String name = descriptor.getName();
                 description.put(name, getProperty(bean, name));
             }
         } else {
-            final PropertyDescriptor[] descriptors =
-                getPropertyDescriptors(bean);
+            final PropertyDescriptor[] descriptors = getPropertyDescriptors(bean);
             for (final PropertyDescriptor descriptor : descriptors) {
                 final String name = descriptor.getName();
                 if (descriptor.getReadMethod() != null) {
@@ -332,8 +276,7 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Performs introspection on the specified class. This method invokes all {@code BeanIntrospector} objects that were
-     * added to this instance.
+     * Performs introspection on the specified class. This method invokes all {@code BeanIntrospector} objects that were added to this instance.
      *
      * @param beanClass the class to be inspected
      * @return a data object with the results of introspection
@@ -353,52 +296,31 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Gets the value of the specified indexed property of the specified
-     * bean, with no type conversions.  The zero-relative index of the
-     * required value must be included (in square brackets) as a suffix to
-     * the property name, or {@code IllegalArgumentException} will be
-     * thrown.  In addition to supporting the JavaBeans specification, this
-     * method has been extended to support {@code List} objects as well.
+     * Gets the value of the specified indexed property of the specified bean, with no type conversions. The zero-relative index of the required value must be
+     * included (in square brackets) as a suffix to the property name, or {@code IllegalArgumentException} will be thrown. In addition to supporting the
+     * JavaBeans specification, this method has been extended to support {@code List} objects as well.
      *
      * @param bean Bean whose property is to be extracted
-     * @param name {@code propertyname[index]} of the property value
-     *  to be extracted
+     * @param name {@code propertyname[index]} of the property value to be extracted
      * @return the indexed property value
-     *
-     * @throws IndexOutOfBoundsException if the specified index
-     *  is outside the valid range for the underlying array or List
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IndexOutOfBoundsException if the specified index is outside the valid range for the underlying array or List
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Object getIndexedProperty(final Object bean, String name)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+    public Object getIndexedProperty(final Object bean, String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Identify the index of the requested individual property
         int index = -1;
         try {
             index = resolver.getIndex(name);
         } catch (final IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid indexed property '" +
-                    name + "' on bean class '" + bean.getClass() + "' " +
-                    e.getMessage());
+            throw new IllegalArgumentException("Invalid indexed property '" + name + "' on bean class '" + bean.getClass() + "' " + e.getMessage());
         }
         if (index < 0) {
-            throw new IllegalArgumentException("Invalid indexed property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Invalid indexed property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
 
         // Isolate the name
@@ -409,81 +331,56 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Gets the value of the specified indexed property of the specified
-     * bean, with no type conversions.  In addition to supporting the JavaBeans
-     * specification, this method has been extended to support
-     * {@code List} objects as well.
+     * Gets the value of the specified indexed property of the specified bean, with no type conversions. In addition to supporting the JavaBeans specification,
+     * this method has been extended to support {@code List} objects as well.
      *
-     * @param bean Bean whose property is to be extracted
-     * @param name Simple property name of the property value to be extracted
+     * @param bean  Bean whose property is to be extracted
+     * @param name  Simple property name of the property value to be extracted
      * @param index Index of the property value to be extracted
      * @return the indexed property value
-     *
-     * @throws IndexOutOfBoundsException if the specified index
-     *  is outside the valid range for the underlying property
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IndexOutOfBoundsException if the specified index is outside the valid range for the underlying property
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Object getIndexedProperty(final Object bean,
-                                            final String name, final int index)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
+    public Object getIndexedProperty(final Object bean, final String name, final int index)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
         if (name == null || name.isEmpty()) {
             if (bean.getClass().isArray()) {
                 return Array.get(bean, index);
             }
             if (bean instanceof List) {
-                return ((List<?>)bean).get(index);
+                return ((List<?>) bean).get(index);
             }
         }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+        Objects.requireNonNull(name, "name");
         // Handle DynaBean instances specially
         if (bean instanceof DynaBean) {
-            final DynaProperty descriptor =
-                    ((DynaBean) bean).getDynaClass().getDynaProperty(name);
+            final DynaProperty descriptor = ((DynaBean) bean).getDynaClass().getDynaProperty(name);
             if (descriptor == null) {
-                throw new NoSuchMethodException("Unknown property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+                throw new NoSuchMethodException("Unknown property '" + name + "' on bean class '" + bean.getClass() + "'");
             }
             return ((DynaBean) bean).get(name, index);
         }
 
         // Retrieve the property descriptor for the specified property
-        final PropertyDescriptor descriptor =
-                getPropertyDescriptor(bean, name);
+        final PropertyDescriptor descriptor = getPropertyDescriptor(bean, name);
         if (descriptor == null) {
-            throw new NoSuchMethodException("Unknown property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new NoSuchMethodException("Unknown property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
 
         // Call the indexed getter method if there is one
         if (descriptor instanceof IndexedPropertyDescriptor) {
-            Method readMethod = ((IndexedPropertyDescriptor) descriptor).
-                    getIndexedReadMethod();
+            Method readMethod = ((IndexedPropertyDescriptor) descriptor).getIndexedReadMethod();
             readMethod = MethodUtils.getAccessibleMethod(bean.getClass(), readMethod);
             if (readMethod != null) {
-                final Object[] subscript = new Object[1];
-                subscript[0] = Integer.valueOf(index);
                 try {
-                    return invokeMethod(readMethod, bean, subscript);
+                    return invokeMethod(readMethod, bean, Integer.valueOf(index));
                 } catch (final InvocationTargetException e) {
-                    if (e.getTargetException() instanceof
-                            IndexOutOfBoundsException) {
-                        throw (IndexOutOfBoundsException)
-                                e.getTargetException();
+                    if (e.getTargetException() instanceof IndexOutOfBoundsException) {
+                        throw (IndexOutOfBoundsException) e.getTargetException();
                     }
                     throw e;
                 }
@@ -493,96 +390,68 @@ public class PropertyUtilsBean {
         // Otherwise, the underlying property must be an array
         final Method readMethod = getReadMethod(bean.getClass(), descriptor);
         if (readMethod == null) {
-            throw new NoSuchMethodException("Property '" + name + "' has no " +
-                    "getter method on bean class '" + bean.getClass() + "'");
+            throw new NoSuchMethodException("Property '" + name + "' has no " + "getter method on bean class '" + bean.getClass() + "'");
         }
 
         // Call the property getter and return the value
         final Object value = invokeMethod(readMethod, bean, BeanUtils.EMPTY_OBJECT_ARRAY);
         if (!value.getClass().isArray()) {
-            if (!(value instanceof java.util.List)) {
-                throw new IllegalArgumentException("Property '" + name +
-                        "' is not indexed on bean class '" + bean.getClass() + "'");
+            if (!(value instanceof List)) {
+                throw new IllegalArgumentException("Property '" + name + "' is not indexed on bean class '" + bean.getClass() + "'");
             }
-            //get the List's value
-            return ((java.util.List<?>) value).get(index);
+            // get the List's value
+            return ((List<?>) value).get(index);
         }
-        //get the array's value
+        // get the array's value
         try {
             return Array.get(value, index);
         } catch (final ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("Index: " +
-                    index + ", Size: " + Array.getLength(value) +
-                    " for property '" + name + "'");
+            throw new ArrayIndexOutOfBoundsException("Index: " + index + ", Size: " + Array.getLength(value) + " for property '" + name + "'");
         }
     }
 
     /**
-     * Obtains the {@code BeanIntrospectionData} object describing the specified bean
-     * class. This object is looked up in the internal cache. If necessary, introspection
-     * is performed now on the affected bean class, and the results object is created.
+     * Obtains the {@code BeanIntrospectionData} object describing the specified bean class. This object is looked up in the internal cache. If necessary,
+     * introspection is performed now on the affected bean class, and the results object is created.
      *
      * @param beanClass the bean class in question
      * @return the {@code BeanIntrospectionData} object for this class
-     * @throws IllegalArgumentException if the bean class is <b>null</b>
+     * @throws IllegalArgumentException if the bean class is <strong>null</strong>
      */
     private BeanIntrospectionData getIntrospectionData(final Class<?> beanClass) {
-        if (beanClass == null) {
-            throw new IllegalArgumentException("No bean class specified");
-        }
-
+        Objects.requireNonNull(beanClass, "beanClass");
         // Look up any cached information for this bean class
         BeanIntrospectionData data = descriptorsCache.get(beanClass);
         if (data == null) {
             data = fetchIntrospectionData(beanClass);
             descriptorsCache.put(beanClass, data);
         }
-
         return data;
     }
 
     /**
-     * Gets the value of the specified mapped property of the
-     * specified bean, with no type conversions.  The key of the
-     * required value must be included (in brackets) as a suffix to
-     * the property name, or {@code IllegalArgumentException} will be
-     * thrown.
+     * Gets the value of the specified mapped property of the specified bean, with no type conversions. The key of the required value must be included (in
+     * brackets) as a suffix to the property name, or {@code IllegalArgumentException} will be thrown.
      *
      * @param bean Bean whose property is to be extracted
-     * @param name {@code propertyname(key)} of the property value
-     *  to be extracted
+     * @param name {@code propertyname(key)} of the property value to be extracted
      * @return the mapped property value
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Object getMappedProperty(final Object bean, String name)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+    public Object getMappedProperty(final Object bean, String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Identify the key of the requested individual property
-        String key  = null;
+        String key = null;
         try {
             key = resolver.getKey(name);
         } catch (final IllegalArgumentException e) {
-            throw new IllegalArgumentException
-                    ("Invalid mapped property '" + name +
-                    "' on bean class '" + bean.getClass() + "' " + e.getMessage());
+            throw new IllegalArgumentException("Invalid mapped property '" + name + "' on bean class '" + bean.getClass() + "' " + e.getMessage());
         }
         if (key == null) {
-            throw new IllegalArgumentException("Invalid mapped property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Invalid mapped property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
 
         // Isolate the name
@@ -593,44 +462,26 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Gets the value of the specified mapped property of the specified
-     * bean, with no type conversions.
+     * Gets the value of the specified mapped property of the specified bean, with no type conversions.
      *
      * @param bean Bean whose property is to be extracted
      * @param name Mapped property name of the property value to be extracted
-     * @param key Key of the property value to be extracted
+     * @param key  Key of the property value to be extracted
      * @return the mapped property value
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Object getMappedProperty(final Object bean,
-                                           final String name, final String key)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-        if (key == null) {
-            throw new IllegalArgumentException("No key specified for property '" +
-                    name + "' on bean class " + bean.getClass() + "'");
-        }
-
+    public Object getMappedProperty(final Object bean, final String name, final String key)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
+        Objects.requireNonNull(key, "key");
         // Handle DynaBean instances specially
         if (bean instanceof DynaBean) {
-            final DynaProperty descriptor =
-                    ((DynaBean) bean).getDynaClass().getDynaProperty(name);
+            final DynaProperty descriptor = ((DynaBean) bean).getDynaClass().getDynaProperty(name);
             if (descriptor == null) {
-                throw new NoSuchMethodException("Unknown property '" +
-                        name + "'+ on bean class '" + bean.getClass() + "'");
+                throw new NoSuchMethodException("Unknown property '" + name + "'+ on bean class '" + bean.getClass() + "'");
             }
             return ((DynaBean) bean).get(name, key);
         }
@@ -640,44 +491,40 @@ public class PropertyUtilsBean {
         // Retrieve the property descriptor for the specified property
         final PropertyDescriptor descriptor = getPropertyDescriptor(bean, name);
         if (descriptor == null) {
-            throw new NoSuchMethodException("Unknown property '" +
-                    name + "'+ on bean class '" + bean.getClass() + "'");
+            throw new NoSuchMethodException("Unknown property '" + name + "'+ on bean class '" + bean.getClass() + "'");
         }
 
         if (descriptor instanceof MappedPropertyDescriptor) {
             // Call the keyed getter method if there is one
-            Method readMethod = ((MappedPropertyDescriptor) descriptor).
-                    getMappedReadMethod();
+            Method readMethod = ((MappedPropertyDescriptor) descriptor).getMappedReadMethod();
             readMethod = MethodUtils.getAccessibleMethod(bean.getClass(), readMethod);
             if (readMethod == null) {
-                throw new NoSuchMethodException("Property '" + name +
-                        "' has no mapped getter method on bean class '" +
-                        bean.getClass() + "'");
+                throw new NoSuchMethodException("Property '" + name + "' has no mapped getter method on bean class '" + bean.getClass() + "'");
             }
-            final Object[] keyArray = new Object[1];
-            keyArray[0] = key;
-            result = invokeMethod(readMethod, bean, keyArray);
+            result = invokeMethod(readMethod, bean, key);
         } else {
-          /* means that the result has to be retrieved from a map */
-          final Method readMethod = getReadMethod(bean.getClass(), descriptor);
-          if (readMethod == null) {
-            throw new NoSuchMethodException("Property '" + name +
-                    "' has no mapped getter method on bean class '" +
-                    bean.getClass() + "'");
-          }
-        final Object invokeResult = invokeMethod(readMethod, bean, BeanUtils.EMPTY_OBJECT_ARRAY);
-        /* test and fetch from the map */
-        if (invokeResult instanceof java.util.Map) {
-          result = ((java.util.Map<?, ?>)invokeResult).get(key);
-        }
+            /* means that the result has to be retrieved from a map */
+            final Method readMethod = getReadMethod(bean.getClass(), descriptor);
+            if (readMethod == null) {
+                throw new NoSuchMethodException("Property '" + name + "' has no mapped getter method on bean class '" + bean.getClass() + "'");
+            }
+            final Object invokeResult = invokeMethod(readMethod, bean, BeanUtils.EMPTY_OBJECT_ARRAY);
+            /* test and fetch from the map */
+            if (invokeResult instanceof Map) {
+                result = ((Map<?, ?>) invokeResult).get(key);
+            }
         }
         return result;
     }
 
     /**
-     * <p>Return the mapped property descriptors for this bean class.</p>
+     * <p>
+     * Return the mapped property descriptors for this bean class.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
      * @param beanClass Bean class to be introspected
      * @return the mapped property descriptors
@@ -686,15 +533,18 @@ public class PropertyUtilsBean {
         if (beanClass == null) {
             return null;
         }
-
         // Look up any cached descriptors for this bean class
         return mappedDescriptorsCache.get(beanClass);
     }
 
     /**
-     * <p>Return the mapped property descriptors for this bean.</p>
+     * <p>
+     * Return the mapped property descriptors for this bean.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
      * @param bean Bean to be introspected
      * @return the mapped property descriptors
@@ -707,35 +557,20 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Gets the value of the (possibly nested) property of the specified
-     * name, for the specified bean, with no type conversions.
+     * Gets the value of the (possibly nested) property of the specified name, for the specified bean, with no type conversions.
      *
      * @param bean Bean whose property is to be extracted
      * @param name Possibly nested name of the property to be extracted
      * @return the nested property value
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws NestedNullException if a nested reference to a
-     *  property returns null
-     * @throws InvocationTargetException
-     * if the property accessor method throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws NestedNullException       if a nested reference to a property returns null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Object getNestedProperty(Object bean, String name)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+    public Object getNestedProperty(Object bean, String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Resolve nested references
         while (resolver.hasNested(name)) {
             final String next = resolver.next(name);
@@ -750,9 +585,7 @@ public class PropertyUtilsBean {
                 nestedBean = getSimpleProperty(bean, next);
             }
             if (nestedBean == null) {
-                throw new NestedNullException
-                        ("Null property value for '" + name +
-                        "' on bean class '" + bean.getClass() + "'");
+                throw new NestedNullException("Null property value for '" + name + "' on bean class '" + bean.getClass() + "'");
             }
             bean = nestedBean;
             name = resolver.remove(name);
@@ -771,80 +604,53 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Gets the value of the specified property of the specified bean,
-     * no matter which property reference format is used, with no
-     * type conversions.
+     * Gets the value of the specified property of the specified bean, no matter which property reference format is used, with no type conversions.
      *
      * @param bean Bean whose property is to be extracted
-     * @param name Possibly indexed and/or nested name of the property
-     *  to be extracted
+     * @param name Possibly indexed and/or nested name of the property to be extracted
      * @return the property value
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Object getProperty(final Object bean, final String name)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
+    public Object getProperty(final Object bean, final String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return getNestedProperty(bean, name);
     }
 
     /**
-     * <p>Retrieve the property descriptor for the specified property of the
-     * specified bean, or return {@code null} if there is no such
-     * descriptor.  This method resolves indexed and nested property
-     * references in the same manner as other methods in this class, except
-     * that if the last (or only) name element is indexed, the descriptor
-     * for the last resolved property itself is returned.</p>
+     * <p>
+     * Retrieve the property descriptor for the specified property of the specified bean, or return {@code null} if there is no such descriptor. This method
+     * resolves indexed and nested property references in the same manner as other methods in this class, except that if the last (or only) name element is
+     * indexed, the descriptor for the last resolved property itself is returned.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
-     * <p>Note that for Java 8 and above, this method no longer return
-     * IndexedPropertyDescriptor for {@link List}-typed properties, only for
-     * properties typed as native array. (BEANUTILS-492).
+     * <p>
+     * Note that for Java 8 and above, this method no longer return IndexedPropertyDescriptor for {@link List}-typed properties, only for properties typed as
+     * native array. (BEANUTILS-492).
      *
      * @param bean Bean for which a property descriptor is requested
-     * @param name Possibly indexed and/or nested name of the property for
-     *  which a property descriptor is requested
+     * @param name Possibly indexed and/or nested name of the property for which a property descriptor is requested
      * @return the property descriptor
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws IllegalArgumentException if a nested reference to a
-     *  property returns null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws IllegalArgumentException  if a nested reference to a property returns null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public PropertyDescriptor getPropertyDescriptor(Object bean,
-                                                           String name)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+    public PropertyDescriptor getPropertyDescriptor(Object bean, String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Resolve nested references
         while (resolver.hasNested(name)) {
             final String next = resolver.next(name);
             final Object nestedBean = getProperty(bean, next);
             if (nestedBean == null) {
-                throw new NestedNullException
-                        ("Null property value for '" + next +
-                        "' on bean class '" + bean.getClass() + "'");
+                throw new NestedNullException("Null property value for '" + next + "' on bean class '" + bean.getClass() + "'");
             }
             bean = nestedBean;
             name = resolver.remove(name);
@@ -876,8 +682,8 @@ public class PropertyUtilsBean {
             try {
                 result = new MappedPropertyDescriptor(name, bean.getClass());
             } catch (final IntrospectionException ie) {
-                /* Swallow IntrospectionException
-                 * TODO: Why?
+                /*
+                 * Swallow IntrospectionException TODO: Why?
                  */
             }
             if (result != null) {
@@ -889,84 +695,70 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * <p>Retrieve the property descriptors for the specified class,
-     * introspecting and caching them the first time a particular bean class
-     * is encountered.</p>
+     * <p>
+     * Retrieve the property descriptors for the specified class, introspecting and caching them the first time a particular bean class is encountered.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
      * @param beanClass Bean class for which property descriptors are requested
      * @return the property descriptors
-     *
      * @throws IllegalArgumentException if {@code beanClass} is null
      */
-    public PropertyDescriptor[]
-            getPropertyDescriptors(final Class<?> beanClass) {
+    public PropertyDescriptor[] getPropertyDescriptors(final Class<?> beanClass) {
         return getIntrospectionData(beanClass).getDescriptors();
     }
 
     /**
-     * <p>Retrieve the property descriptors for the specified bean,
-     * introspecting and caching them the first time a particular bean class
-     * is encountered.</p>
+     * <p>
+     * Retrieve the property descriptors for the specified bean, introspecting and caching them the first time a particular bean class is encountered.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
      * @param bean Bean for which property descriptors are requested
      * @return the property descriptors
-     *
      * @throws IllegalArgumentException if {@code bean} is null
      */
     public PropertyDescriptor[] getPropertyDescriptors(final Object bean) {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
+        Objects.requireNonNull(bean, "bean");
         return getPropertyDescriptors(bean.getClass());
     }
 
     /**
-     * <p>Return the Java Class repesenting the property editor class that has
-     * been registered for this property (if any).  This method follows the
-     * same name resolution rules used by {@code getPropertyDescriptor()},
-     * so if the last element of a name reference is indexed, the property
-     * editor for the underlying property's class is returned.</p>
+     * <p>
+     * Return the Java Class repesenting the property editor class that has been registered for this property (if any). This method follows the same name
+     * resolution rules used by {@code getPropertyDescriptor()}, so if the last element of a name reference is indexed, the property editor for the underlying
+     * property's class is returned.
+     * </p>
      *
-     * <p>Note that {@code null} will be returned if there is no property,
-     * or if there is no registered property editor class.  Because this
-     * return value is ambiguous, you should determine the existence of the
-     * property itself by other means.</p>
+     * <p>
+     * Note that {@code null} will be returned if there is no property, or if there is no registered property editor class. Because this return value is
+     * ambiguous, you should determine the existence of the property itself by other means.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
      * @param bean Bean for which a property descriptor is requested
-     * @param name Possibly indexed and/or nested name of the property for
-     *  which a property descriptor is requested
+     * @param name Possibly indexed and/or nested name of the property for which a property descriptor is requested
      * @return the property editor class
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws IllegalArgumentException if a nested reference to a
-     *  property returns null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws IllegalArgumentException  if a nested reference to a property returns null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
     public Class<?> getPropertyEditorClass(final Object bean, final String name)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
-        final PropertyDescriptor descriptor =
-                getPropertyDescriptor(bean, name);
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
+        final PropertyDescriptor descriptor = getPropertyDescriptor(bean, name);
         if (descriptor != null) {
             return descriptor.getPropertyEditorClass();
         }
@@ -974,32 +766,23 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * This method is called by getNestedProperty and setNestedProperty to
-     * define what it means to get a property from an object which implements
-     * Map. See setPropertyOfMapBean for more information.
+     * This method is called by getNestedProperty and setNestedProperty to define what it means to get a property from an object which implements Map. See
+     * setPropertyOfMapBean for more information.
      *
-     * @param bean Map bean
+     * @param bean         Map bean
      * @param propertyName The property name
      * @return the property value
+     * @throws IllegalArgumentException  when the propertyName is regarded as being invalid.
+     * @throws IllegalAccessException    just in case subclasses override this method to try to access real getter methods and find permission is denied.
+     * @throws InvocationTargetException just in case subclasses override this method to try to access real getter methods, and find it throws an exception when
+     *                                   invoked.
      *
-     * @throws IllegalArgumentException when the propertyName is regarded as
-     * being invalid.
-     *
-     * @throws IllegalAccessException just in case subclasses override this
-     * method to try to access real getter methods and find permission is denied.
-     *
-     * @throws InvocationTargetException just in case subclasses override this
-     * method to try to access real getter methods, and find it throws an
-     * exception when invoked.
-     *
-     * @throws NoSuchMethodException just in case subclasses override this
-     * method to try to access real getter methods, and want to fail if
-     * no simple method is available.
+     * @throws NoSuchMethodException     just in case subclasses override this method to try to access real getter methods, and want to fail if no simple method
+     *                                   is available.
      * @since 1.8.0
      */
     protected Object getPropertyOfMapBean(final Map<?, ?> bean, String propertyName)
-        throws IllegalArgumentException, IllegalAccessException,
-        InvocationTargetException, NoSuchMethodException {
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         if (resolver.isMapped(propertyName)) {
             final String name = resolver.getProperty(propertyName);
@@ -1008,67 +791,41 @@ public class PropertyUtilsBean {
             }
         }
 
-        if (resolver.isIndexed(propertyName) ||
-            resolver.isMapped(propertyName)) {
-            throw new IllegalArgumentException(
-                    "Indexed or mapped properties are not supported on"
-                    + " objects of type Map: " + propertyName);
+        if (resolver.isIndexed(propertyName) || resolver.isMapped(propertyName)) {
+            throw new IllegalArgumentException("Indexed or mapped properties are not supported on" + " objects of type Map: " + propertyName);
         }
 
         return bean.get(propertyName);
     }
 
     /**
-     * Gets the Java Class representing the property type of the specified
-     * property, or {@code null} if there is no such property for the
-     * specified bean.  This method follows the same name resolution rules
-     * used by {@code getPropertyDescriptor()}, so if the last element
-     * of a name reference is indexed, the type of the property itself will
-     * be returned.  If the last (or only) element has no property with the
-     * specified name, {@code null} is returned.
+     * Gets the Java Class representing the property type of the specified property, or {@code null} if there is no such property for the specified bean. This
+     * method follows the same name resolution rules used by {@code getPropertyDescriptor()}, so if the last element of a name reference is indexed, the type of
+     * the property itself will be returned. If the last (or only) element has no property with the specified name, {@code null} is returned.
      * <p>
-     * If the property is an indexed property (e.g. {@code String[]}),
-     * this method will return the type of the items within that array.
-     * Note that from Java 8 and newer, this method do not support
-     * such index types from items within an Collection, and will
-     * instead return the collection type (e.g. java.util.List) from the
-     * getter method.
+     * If the property is an indexed property (for example {@code String[]}), this method will return the type of the items within that array. Note that from
+     * Java 8 and newer, this method do not support such index types from items within an Collection, and will instead return the collection type (for example
+     * java.util.List) from the getter method.
+     * </p>
      *
      * @param bean Bean for which a property descriptor is requested
-     * @param name Possibly indexed and/or nested name of the property for
-     *  which a property descriptor is requested
+     * @param name Possibly indexed and/or nested name of the property for which a property descriptor is requested
      * @return The property type
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws IllegalArgumentException if a nested reference to a
-     *  property returns null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws IllegalArgumentException  if a nested reference to a property returns null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Class<?> getPropertyType(Object bean, String name)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+    public Class<?> getPropertyType(Object bean, String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Resolve nested references
         while (resolver.hasNested(name)) {
             final String next = resolver.next(name);
             final Object nestedBean = getProperty(bean, next);
             if (nestedBean == null) {
-                throw new NestedNullException
-                        ("Null property value for '" + next +
-                        "' on bean class '" + bean.getClass() + "'");
+                throw new NestedNullException("Null property value for '" + next + "' on bean class '" + bean.getClass() + "'");
             }
             bean = nestedBean;
             name = resolver.remove(name);
@@ -1079,8 +836,7 @@ public class PropertyUtilsBean {
 
         // Special handling for DynaBeans
         if (bean instanceof DynaBean) {
-            final DynaProperty descriptor =
-                    ((DynaBean) bean).getDynaClass().getDynaProperty(name);
+            final DynaProperty descriptor = ((DynaBean) bean).getDynaClass().getDynaProperty(name);
             if (descriptor == null) {
                 return null;
             }
@@ -1094,41 +850,51 @@ public class PropertyUtilsBean {
             return type;
         }
 
-        final PropertyDescriptor descriptor =
-                getPropertyDescriptor(bean, name);
+        final PropertyDescriptor descriptor = getPropertyDescriptor(bean, name);
         if (descriptor == null) {
             return null;
         }
         if (descriptor instanceof IndexedPropertyDescriptor) {
-            return ((IndexedPropertyDescriptor) descriptor).
-                    getIndexedPropertyType();
+            return ((IndexedPropertyDescriptor) descriptor).getIndexedPropertyType();
         }
         if (descriptor instanceof MappedPropertyDescriptor) {
-            return ((MappedPropertyDescriptor) descriptor).
-                    getMappedPropertyType();
+            return ((MappedPropertyDescriptor) descriptor).getMappedPropertyType();
         }
         return descriptor.getPropertyType();
     }
 
     /**
-     * <p>Return an accessible property getter method for this property,
-     * if there is one; otherwise return {@code null}.</p>
+     * <p>
+     * Return the property getter method for this property if accessible from given {@code clazz} (and if there is one at all); otherwise return {@code null}.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
-     * @param clazz The class of the read method will be invoked on
+     * <p>
+     * This fairly low-level method shouldn't be needed for most usecases. However, if you do have to implement something extra, you can improve consistency
+     * with the standard code (for example that of {@link #getProperty getProperty()}) by calling this method instead of using
+     * {@code descriptor.getReadMethod()} directly.
+     * </p>
+     *
+     * @param clazz      The class of the read method will be invoked on
      * @param descriptor Property descriptor to return a getter for
      * @return The read method
+     * @since 2.0.0
      */
-    Method getReadMethod(final Class<?> clazz, final PropertyDescriptor descriptor) {
+    public Method getReadMethod(final Class<?> clazz, final PropertyDescriptor descriptor) {
         return MethodUtils.getAccessibleMethod(clazz, descriptor.getReadMethod());
     }
 
     /**
-     * <p>Return an accessible property getter method for this property,
-     * if there is one; otherwise return {@code null}.</p>
+     * <p>
+     * Return an accessible property getter method for this property, if there is one; otherwise return {@code null}.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
      * @param descriptor Property descriptor to return a getter for
      * @return The read method
@@ -1140,10 +906,8 @@ public class PropertyUtilsBean {
     /**
      * Gets the configured {@link Resolver} implementation used by BeanUtils.
      * <p>
-     * The {@link Resolver} handles the <i>property name</i>
-     * expressions and the implementation in use effectively
-     * controls the dialect of the <i>expression language</i>
-     * that BeanUtils recognizes.
+     * The {@link Resolver} handles the <em>property name</em> expressions and the implementation in use effectively controls the dialect of the <em>expression
+     * language</em> that BeanUtils recognizes.
      * <p>
      * {@link DefaultResolver} is the default implementation used.
      *
@@ -1155,75 +919,48 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Gets the value of the specified simple property of the specified
-     * bean, with no type conversions.
+     * Gets the value of the specified simple property of the specified bean, with no type conversions.
      *
      * @param bean Bean whose property is to be extracted
      * @param name Name of the property to be extracted
      * @return The property value
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws IllegalArgumentException if the property name
-     *  is nested or indexed
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws IllegalArgumentException  if the property name is nested or indexed
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public Object getSimpleProperty(final Object bean, final String name)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+    public Object getSimpleProperty(final Object bean, final String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Validate the syntax of the property name
         if (resolver.hasNested(name)) {
-            throw new IllegalArgumentException
-                    ("Nested property names are not allowed: Property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Nested property names are not allowed: Property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
         if (resolver.isIndexed(name)) {
-            throw new IllegalArgumentException
-                    ("Indexed property names are not allowed: Property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Indexed property names are not allowed: Property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
         if (resolver.isMapped(name)) {
-            throw new IllegalArgumentException
-                    ("Mapped property names are not allowed: Property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Mapped property names are not allowed: Property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
 
         // Handle DynaBean instances specially
         if (bean instanceof DynaBean) {
-            final DynaProperty descriptor =
-                    ((DynaBean) bean).getDynaClass().getDynaProperty(name);
+            final DynaProperty descriptor = ((DynaBean) bean).getDynaClass().getDynaProperty(name);
             if (descriptor == null) {
-                throw new NoSuchMethodException("Unknown property '" +
-                        name + "' on dynaclass '" +
-                        ((DynaBean) bean).getDynaClass() + "'" );
+                throw new NoSuchMethodException("Unknown property '" + name + "' on dynaclass '" + ((DynaBean) bean).getDynaClass() + "'");
             }
             return ((DynaBean) bean).get(name);
         }
 
         // Retrieve the property getter method for the specified property
-        final PropertyDescriptor descriptor =
-                getPropertyDescriptor(bean, name);
+        final PropertyDescriptor descriptor = getPropertyDescriptor(bean, name);
         if (descriptor == null) {
-            throw new NoSuchMethodException("Unknown property '" +
-                    name + "' on class '" + bean.getClass() + "'" );
+            throw new NoSuchMethodException("Unknown property '" + name + "' on class '" + bean.getClass() + "'");
         }
         final Method readMethod = getReadMethod(bean.getClass(), descriptor);
         if (readMethod == null) {
-            throw new NoSuchMethodException("Property '" + name +
-                    "' has no getter method in class '" + bean.getClass() + "'");
+            throw new NoSuchMethodException("Property '" + name + "' has no getter method in class '" + bean.getClass() + "'");
         }
 
         // Call the property getter and return the value
@@ -1231,32 +968,42 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * <p>Return an accessible property setter method for this property,
-     * if there is one; otherwise return {@code null}.</p>
+     * <p>
+     * Return the property setter method for this property if accessible from given {@code clazz} (and if there is one at all); otherwise return {@code null}.
+     * </p>
      *
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
-     * @param clazz The class of the read method will be invoked on
+     * <p>
+     * This fairly low-level method shouldn't be needed for most usecases. However, if you do have to implement something extra, you can improve consistency
+     * with the standard code (for example that of {@link #setProperty setProperty()}) by calling this method instead of using
+     * {@code descriptor.getWriteMethod()} directly.
+     * </p>
+     *
+     * @param clazz      The class of the read method will be invoked on
      * @param descriptor Property descriptor to return a setter for
      * @return The write method
      * @since 1.9.1
      */
     public Method getWriteMethod(final Class<?> clazz, final PropertyDescriptor descriptor) {
         final BeanIntrospectionData data = getIntrospectionData(clazz);
-        return MethodUtils.getAccessibleMethod(clazz,
-                data.getWriteMethod(clazz, descriptor));
+        return MethodUtils.getAccessibleMethod(clazz, data.getWriteMethod(clazz, descriptor));
     }
 
     /**
-     * <p>Return an accessible property setter method for this property,
-     * if there is one; otherwise return {@code null}.</p>
+     * <p>
+     * Return an accessible property setter method for this property, if there is one; otherwise return {@code null}.
+     * </p>
      *
-     * <p><em>Note:</em> This method does not work correctly with custom bean
-     * introspection under certain circumstances. It may return {@code null}
-     * even if a write method is defined for the property in question. Use
-     * {@link #getWriteMethod(Class, PropertyDescriptor)} to be sure that the
-     * correct result is returned.</p>
-     * <p><strong>FIXME</strong> - Does not work with DynaBeans.</p>
+     * <p>
+     * <em>Note:</em> This method does not work correctly with custom bean introspection under certain circumstances. It may return {@code null} even if a write
+     * method is defined for the property in question. Use {@link #getWriteMethod(Class, PropertyDescriptor)} to be sure that the correct result is returned.
+     * </p>
+     * <p>
+     * <strong>FIXME</strong> - Does not work with DynaBeans.
+     * </p>
      *
      * @param descriptor Property descriptor to return a setter for
      * @return The write method
@@ -1265,30 +1012,22 @@ public class PropertyUtilsBean {
         return MethodUtils.getAccessibleMethod(descriptor.getWriteMethod());
     }
 
-    /** This just catches and wraps IllegalArgumentException. */
-    private Object invokeMethod(
-                        final Method method,
-                        final Object bean,
-                        final Object[] values)
-                            throws
-                                IllegalAccessException,
-                                InvocationTargetException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified " +
-                "- this should have been checked before reaching this method");
-        }
-
+    /**
+     * Delegates to {@link Method#invoke(Object, Object...)} and handles some unchecked exceptions.
+     *
+     * @see Method#invoke(Object, Object...)
+     */
+    private Object invokeMethod(final Method method, final Object bean, final Object... values) throws IllegalAccessException, InvocationTargetException {
+        Objects.requireNonNull(bean, "bean");
         try {
-
             return method.invoke(bean, values);
-
         } catch (final NullPointerException | IllegalArgumentException cause) {
             // JDK 1.3 and JDK 1.4 throw NullPointerException if an argument is
             // null for a primitive value (JDK 1.5+ throw IllegalArgumentException)
             final StringBuilder valueString = new StringBuilder();
             if (values != null) {
                 for (int i = 0; i < values.length; i++) {
-                    if (i>0) {
+                    if (i > 0) {
                         valueString.append(", ");
                     }
                     if (values[i] == null) {
@@ -1308,47 +1047,26 @@ public class PropertyUtilsBean {
                     expectedString.append(parTypes[i].getName());
                 }
             }
-            final IllegalArgumentException e = new IllegalArgumentException(
-                "Cannot invoke " + method.getDeclaringClass().getName() + "."
-                + method.getName() + " on bean class '" + bean.getClass() +
-                "' - " + cause.getMessage()
-                // as per https://issues.apache.org/jira/browse/BEANUTILS-224
-                + " - had objects of type \"" + valueString
-                + "\" but expected signature \""
-                +   expectedString + "\""
-                );
-            if (!BeanUtils.initCause(e, cause)) {
-                LOG.error("Method invocation failed", cause);
-            }
-            throw e;
+            throw new IllegalArgumentException("Cannot invoke " + method.getDeclaringClass().getName() + "." + method.getName() + " on bean class '"
+                    + bean.getClass() + "' - " + cause.getMessage()
+                    // as per https://issues.apache.org/jira/browse/BEANUTILS-224
+                    + " - had objects of type \"" + valueString + "\" but expected signature \"" + expectedString + "\"", cause);
         }
     }
 
     /**
-     * <p>Return {@code true} if the specified property name identifies
-     * a readable property on the specified bean; otherwise, return
-     * {@code false}.
+     * Return {@code true} if the specified property name identifies a readable property on the specified bean; otherwise, return {@code false}.
      *
      * @param bean Bean to be examined (may be a {@link DynaBean}
      * @param name Property name to be evaluated
-     * @return {@code true} if the property is readable,
-     * otherwise {@code false}
-     *
-     * @throws IllegalArgumentException if {@code bean}
-     *  or {@code name</code> is <code>null}
-     *
+     * @return {@code true} if the property is readable, otherwise {@code false}
+     * @throws IllegalArgumentException if {@code bean} or {@code name</code> is <code>null}
      * @since 1.6
      */
     public boolean isReadable(Object bean, String name) {
         // Validate method parameters
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Resolve nested references
         while (resolver.hasNested(name)) {
             final String next = resolver.next(name);
@@ -1359,9 +1077,7 @@ public class PropertyUtilsBean {
                 return false;
             }
             if (nestedBean == null) {
-                throw new NestedNullException
-                        ("Null property value for '" + next +
-                        "' on bean class '" + bean.getClass() + "'");
+                throw new NestedNullException("Null property value for '" + next + "' on bean class '" + bean.getClass() + "'");
             }
             bean = nestedBean;
             name = resolver.remove(name);
@@ -1373,7 +1089,7 @@ public class PropertyUtilsBean {
         // Treat WrapDynaBean as special case - may be a write-only property
         // (see Jira issue# BEANUTILS-61)
         if (bean instanceof WrapDynaBean) {
-            bean = ((WrapDynaBean)bean).getInstance();
+            bean = ((WrapDynaBean) bean).getInstance();
         }
 
         // Return the requested result
@@ -1382,8 +1098,7 @@ public class PropertyUtilsBean {
             return ((DynaBean) bean).getDynaClass().getDynaProperty(name) != null;
         }
         try {
-            final PropertyDescriptor desc =
-                getPropertyDescriptor(bean, name);
+            final PropertyDescriptor desc = getPropertyDescriptor(bean, name);
             if (desc != null) {
                 Method readMethod = getReadMethod(bean.getClass(), desc);
                 if (readMethod == null) {
@@ -1403,30 +1118,18 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * <p>Return {@code true} if the specified property name identifies
-     * a writable property on the specified bean; otherwise, return
-     * {@code false}.
+     * Return {@code true} if the specified property name identifies a writable property on the specified bean; otherwise, return {@code false}.
      *
      * @param bean Bean to be examined (may be a {@link DynaBean}
      * @param name Property name to be evaluated
-     * @return {@code true} if the property is writable,
-     * otherwise {@code false}
-     *
-     * @throws IllegalArgumentException if {@code bean}
-     *  or {@code name</code> is <code>null}
-     *
+     * @return {@code true} if the property is writable, otherwise {@code false}
+     * @throws IllegalArgumentException if {@code bean} or {@code name</code> is <code>null}
      * @since 1.6
      */
     public boolean isWriteable(Object bean, String name) {
         // Validate method parameters
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Resolve nested references
         while (resolver.hasNested(name)) {
             final String next = resolver.next(name);
@@ -1437,9 +1140,7 @@ public class PropertyUtilsBean {
                 return false;
             }
             if (nestedBean == null) {
-                throw new NestedNullException
-                        ("Null property value for '" + next +
-                        "' on bean class '" + bean.getClass() + "'");
+                throw new NestedNullException("Null property value for '" + next + "' on bean class '" + bean.getClass() + "'");
             }
             bean = nestedBean;
             name = resolver.remove(name);
@@ -1451,7 +1152,7 @@ public class PropertyUtilsBean {
         // Treat WrapDynaBean as special case - may be a read-only property
         // (see Jira issue# BEANUTILS-61)
         if (bean instanceof WrapDynaBean) {
-            bean = ((WrapDynaBean)bean).getInstance();
+            bean = ((WrapDynaBean) bean).getInstance();
         }
 
         // Return the requested result
@@ -1460,8 +1161,7 @@ public class PropertyUtilsBean {
             return ((DynaBean) bean).getDynaClass().getDynaProperty(name) != null;
         }
         try {
-            final PropertyDescriptor desc =
-                getPropertyDescriptor(bean, name);
+            final PropertyDescriptor desc = getPropertyDescriptor(bean, name);
             if (desc != null) {
                 Method writeMethod = getWriteMethod(bean.getClass(), desc);
                 if (writeMethod == null) {
@@ -1484,8 +1184,7 @@ public class PropertyUtilsBean {
      * Removes the specified {@code BeanIntrospector}.
      *
      * @param introspector the {@code BeanIntrospector} to be removed
-     * @return <b>true</b> if the {@code BeanIntrospector} existed and
-     *         could be removed, <b>false</b> otherwise
+     * @return <strong>true</strong> if the {@code BeanIntrospector} existed and could be removed, <strong>false</strong> otherwise
      * @since 1.9
      */
     public boolean removeBeanIntrospector(final BeanIntrospector introspector) {
@@ -1493,8 +1192,8 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Resets the {@link BeanIntrospector} objects registered at this instance. After this
-     * method was called, only the default {@code BeanIntrospector} is registered.
+     * Resets the {@link BeanIntrospector} objects registered at this instance. After this method was called, only the default {@code BeanIntrospector} is
+     * registered.
      *
      * @since 1.9
      */
@@ -1505,34 +1204,22 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Sets the value of the specified indexed property of the specified
-     * bean, with no type conversions.  In addition to supporting the JavaBeans
-     * specification, this method has been extended to support
-     * {@code List} objects as well.
+     * Sets the value of the specified indexed property of the specified bean, with no type conversions. In addition to supporting the JavaBeans specification,
+     * this method has been extended to support {@code List} objects as well.
      *
-     * @param bean Bean whose property is to be set
-     * @param name Simple property name of the property value to be set
+     * @param bean  Bean whose property is to be set
+     * @param name  Simple property name of the property value to be set
      * @param index Index of the property value to be set
      * @param value Value to which the indexed property element is to be set
-     *
-     * @throws IndexOutOfBoundsException if the specified index
-     *  is outside the valid range for the underlying property
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IndexOutOfBoundsException if the specified index is outside the valid range for the underlying property
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public void setIndexedProperty(final Object bean, final String name,
-                                          final int index, final Object value)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
+    public void setIndexedProperty(final Object bean, final String name, final int index, final Object value)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
         if (name == null || name.isEmpty()) {
             if (bean.getClass().isArray()) {
                 Array.set(bean, index, value);
@@ -1544,56 +1231,38 @@ public class PropertyUtilsBean {
                 return;
             }
         }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+        Objects.requireNonNull(name, "name");
         // Handle DynaBean instances specially
         if (bean instanceof DynaBean) {
-            final DynaProperty descriptor =
-                    ((DynaBean) bean).getDynaClass().getDynaProperty(name);
+            final DynaProperty descriptor = ((DynaBean) bean).getDynaClass().getDynaProperty(name);
             if (descriptor == null) {
-                throw new NoSuchMethodException("Unknown property '" +
-                        name + "' on bean class '" + bean.getClass() + "'");
+                throw new NoSuchMethodException("Unknown property '" + name + "' on bean class '" + bean.getClass() + "'");
             }
             ((DynaBean) bean).set(name, index, value);
             return;
         }
 
         // Retrieve the property descriptor for the specified property
-        final PropertyDescriptor descriptor =
-                getPropertyDescriptor(bean, name);
+        final PropertyDescriptor descriptor = getPropertyDescriptor(bean, name);
         if (descriptor == null) {
-            throw new NoSuchMethodException("Unknown property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new NoSuchMethodException("Unknown property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
 
         // Call the indexed setter method if there is one
         if (descriptor instanceof IndexedPropertyDescriptor) {
-            Method writeMethod = ((IndexedPropertyDescriptor) descriptor).
-                    getIndexedWriteMethod();
+            Method writeMethod = ((IndexedPropertyDescriptor) descriptor).getIndexedWriteMethod();
             writeMethod = MethodUtils.getAccessibleMethod(bean.getClass(), writeMethod);
             if (writeMethod != null) {
-                final Object[] subscript = new Object[2];
-                subscript[0] = Integer.valueOf(index);
-                subscript[1] = value;
                 try {
                     if (LOG.isTraceEnabled()) {
-                        final String valueClassName =
-                            value == null ? "<null>"
-                                          : value.getClass().getName();
-                        LOG.trace("setSimpleProperty: Invoking method "
-                                  + writeMethod +" with index=" + index
-                                  + ", value=" + value
-                                  + " (class " + valueClassName+ ")");
+                        final String valueClassName = value == null ? "<null>" : value.getClass().getName();
+                        LOG.trace("setSimpleProperty: Invoking method " + writeMethod + " with index=" + index + ", value=" + value + " (class "
+                                + valueClassName + ")");
                     }
-                    invokeMethod(writeMethod, bean, subscript);
+                    invokeMethod(writeMethod, bean, Integer.valueOf(index), value);
                 } catch (final InvocationTargetException e) {
-                    if (e.getTargetException() instanceof
-                            IndexOutOfBoundsException) {
-                        throw (IndexOutOfBoundsException)
-                                e.getTargetException();
+                    if (e.getTargetException() instanceof IndexOutOfBoundsException) {
+                        throw (IndexOutOfBoundsException) e.getTargetException();
                     }
                     throw e;
                 }
@@ -1604,16 +1273,14 @@ public class PropertyUtilsBean {
         // Otherwise, the underlying property must be an array or a list
         final Method readMethod = getReadMethod(bean.getClass(), descriptor);
         if (readMethod == null) {
-            throw new NoSuchMethodException("Property '" + name +
-                    "' has no getter method on bean class '" + bean.getClass() + "'");
+            throw new NoSuchMethodException("Property '" + name + "' has no getter method on bean class '" + bean.getClass() + "'");
         }
 
         // Call the property getter to get the array or list
         final Object array = invokeMethod(readMethod, bean, BeanUtils.EMPTY_OBJECT_ARRAY);
         if (!array.getClass().isArray()) {
             if (!(array instanceof List)) {
-                throw new IllegalArgumentException("Property '" + name +
-                        "' is not indexed on bean class '" + bean.getClass() + "'");
+                throw new IllegalArgumentException("Property '" + name + "' is not indexed on bean class '" + bean.getClass() + "'");
             }
             // Modify the specified value in the List
             final List<Object> list = toObjectList(array);
@@ -1625,53 +1292,32 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Sets the value of the specified indexed property of the specified
-     * bean, with no type conversions.  The zero-relative index of the
-     * required value must be included (in square brackets) as a suffix to
-     * the property name, or {@code IllegalArgumentException} will be
-     * thrown.  In addition to supporting the JavaBeans specification, this
-     * method has been extended to support {@code List} objects as well.
+     * Sets the value of the specified indexed property of the specified bean, with no type conversions. The zero-relative index of the required value must be
+     * included (in square brackets) as a suffix to the property name, or {@code IllegalArgumentException} will be thrown. In addition to supporting the
+     * JavaBeans specification, this method has been extended to support {@code List} objects as well.
      *
-     * @param bean Bean whose property is to be modified
-     * @param name {@code propertyname[index]} of the property value
-     *  to be modified
-     * @param value Value to which the specified property element
-     *  should be set
-     *
-     * @throws IndexOutOfBoundsException if the specified index
-     *  is outside the valid range for the underlying property
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @param bean  Bean whose property is to be modified
+     * @param name  {@code propertyname[index]} of the property value to be modified
+     * @param value Value to which the specified property element should be set
+     * @throws IndexOutOfBoundsException if the specified index is outside the valid range for the underlying property
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public void setIndexedProperty(final Object bean, String name,
-                                          final Object value)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+    public void setIndexedProperty(final Object bean, String name, final Object value)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Identify the index of the requested individual property
         int index = -1;
         try {
             index = resolver.getIndex(name);
         } catch (final IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid indexed property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Invalid indexed property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
         if (index < 0) {
-            throw new IllegalArgumentException("Invalid indexed property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Invalid indexed property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
 
         // Isolate the name
@@ -1682,49 +1328,30 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Sets the value of the specified mapped property of the
-     * specified bean, with no type conversions.  The key of the
-     * value to set must be included (in brackets) as a suffix to
-     * the property name, or {@code IllegalArgumentException} will be
-     * thrown.
+     * Sets the value of the specified mapped property of the specified bean, with no type conversions. The key of the value to set must be included (in
+     * brackets) as a suffix to the property name, or {@code IllegalArgumentException} will be thrown.
      *
-     * @param bean Bean whose property is to be set
-     * @param name {@code propertyname(key)} of the property value
-     *  to be set
+     * @param bean  Bean whose property is to be set
+     * @param name  {@code propertyname(key)} of the property value to be set
      * @param value The property value to be set
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public void setMappedProperty(final Object bean, String name,
-                                         final Object value)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
+    public void setMappedProperty(final Object bean, String name, final Object value)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
 
         // Identify the key of the requested individual property
-        String key  = null;
+        String key = null;
         try {
             key = resolver.getKey(name);
         } catch (final IllegalArgumentException e) {
-            throw new IllegalArgumentException
-                    ("Invalid mapped property '" + name +
-                    "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Invalid mapped property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
         if (key == null) {
-            throw new IllegalArgumentException
-                    ("Invalid mapped property '" + name +
-                    "' on bean class '" + bean.getClass() + "'");
+            throw new IllegalArgumentException("Invalid mapped property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
 
         // Isolate the name
@@ -1735,145 +1362,94 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Sets the value of the specified mapped property of the specified
-     * bean, with no type conversions.
+     * Sets the value of the specified mapped property of the specified bean, with no type conversions.
      *
-     * @param bean Bean whose property is to be set
-     * @param name Mapped property name of the property value to be set
-     * @param key Key of the property value to be set
+     * @param bean  Bean whose property is to be set
+     * @param name  Mapped property name of the property value to be set
+     * @param key   Key of the property value to be set
      * @param value The property value to be set
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public void setMappedProperty(final Object bean, final String name,
-                                         final String key, final Object value)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-        if (key == null) {
-            throw new IllegalArgumentException("No key specified for property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
-        }
-
+    public void setMappedProperty(final Object bean, final String name, final String key, final Object value)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
+        Objects.requireNonNull(key, "key");
         // Handle DynaBean instances specially
         if (bean instanceof DynaBean) {
-            final DynaProperty descriptor =
-                    ((DynaBean) bean).getDynaClass().getDynaProperty(name);
+            final DynaProperty descriptor = ((DynaBean) bean).getDynaClass().getDynaProperty(name);
             if (descriptor == null) {
-                throw new NoSuchMethodException("Unknown property '" +
-                        name + "' on bean class '" + bean.getClass() + "'");
+                throw new NoSuchMethodException("Unknown property '" + name + "' on bean class '" + bean.getClass() + "'");
             }
             ((DynaBean) bean).set(name, key, value);
             return;
         }
 
         // Retrieve the property descriptor for the specified property
-        final PropertyDescriptor descriptor =
-                getPropertyDescriptor(bean, name);
+        final PropertyDescriptor descriptor = getPropertyDescriptor(bean, name);
         if (descriptor == null) {
-            throw new NoSuchMethodException("Unknown property '" +
-                    name + "' on bean class '" + bean.getClass() + "'");
+            throw new NoSuchMethodException("Unknown property '" + name + "' on bean class '" + bean.getClass() + "'");
         }
 
         if (descriptor instanceof MappedPropertyDescriptor) {
             // Call the keyed setter method if there is one
-            Method mappedWriteMethod =
-                    ((MappedPropertyDescriptor) descriptor).
-                    getMappedWriteMethod();
+            Method mappedWriteMethod = ((MappedPropertyDescriptor) descriptor).getMappedWriteMethod();
             mappedWriteMethod = MethodUtils.getAccessibleMethod(bean.getClass(), mappedWriteMethod);
             if (mappedWriteMethod == null) {
-                throw new NoSuchMethodException
-                    ("Property '" + name + "' has no mapped setter method" +
-                     "on bean class '" + bean.getClass() + "'");
+                throw new NoSuchMethodException("Property '" + name + "' has no mapped setter method" + "on bean class '" + bean.getClass() + "'");
             }
-            final Object[] params = new Object[2];
-            params[0] = key;
-            params[1] = value;
             if (LOG.isTraceEnabled()) {
-                final String valueClassName =
-                    value == null ? "<null>" : value.getClass().getName();
-                LOG.trace("setSimpleProperty: Invoking method "
-                          + mappedWriteMethod + " with key=" + key
-                          + ", value=" + value
-                          + " (class " + valueClassName +")");
+                final String valueClassName = value == null ? "<null>" : value.getClass().getName();
+                LOG.trace("setSimpleProperty: Invoking method " + mappedWriteMethod + " with key=" + key + ", value=" + value + " (class " + valueClassName
+                        + ")");
             }
-            invokeMethod(mappedWriteMethod, bean, params);
+            invokeMethod(mappedWriteMethod, bean, key, value);
         } else {
-          /* means that the result has to be retrieved from a map */
-          final Method readMethod = getReadMethod(bean.getClass(), descriptor);
-          if (readMethod == null) {
-            throw new NoSuchMethodException("Property '" + name +
-                    "' has no mapped getter method on bean class '" +
-                    bean.getClass() + "'");
-          }
-        final Object invokeResult = invokeMethod(readMethod, bean, BeanUtils.EMPTY_OBJECT_ARRAY);
-        /* test and fetch from the map */
-        if (invokeResult instanceof java.util.Map) {
-          final java.util.Map<String, Object> map = toPropertyMap(invokeResult);
-          map.put(key, value);
-        }
+            /* means that the result has to be retrieved from a map */
+            final Method readMethod = getReadMethod(bean.getClass(), descriptor);
+            if (readMethod == null) {
+                throw new NoSuchMethodException("Property '" + name + "' has no mapped getter method on bean class '" + bean.getClass() + "'");
+            }
+            final Object invokeResult = invokeMethod(readMethod, bean, BeanUtils.EMPTY_OBJECT_ARRAY);
+            /* test and fetch from the map */
+            if (invokeResult instanceof Map) {
+                toPropertyMap(invokeResult).put(key, value);
+            }
         }
     }
 
     /**
-     * Sets the value of the (possibly nested) property of the specified
-     * name, for the specified bean, with no type conversions.
+     * Sets the value of the (possibly nested) property of the specified name, for the specified bean, with no type conversions.
      * <p>
      * Example values for parameter "name" are:
      * <ul>
-     * <li> "a" -- sets the value of property a of the specified bean </li>
-     * <li> "a.b" -- gets the value of property a of the specified bean,
-     * then on that object sets the value of property b.</li>
-     * <li> "a(key)" -- sets a value of mapped-property a on the specified
-     * bean. This effectively means bean.setA("key").</li>
-     * <li> "a[3]" -- sets a value of indexed-property a on the specified
-     * bean. This effectively means bean.setA(3).</li>
+     * <li>"a" -- sets the value of property a of the specified bean</li>
+     * <li>"a.b" -- gets the value of property a of the specified bean, then on that object sets the value of property b.</li>
+     * <li>"a(key)" -- sets a value of mapped-property a on the specified bean. This effectively means bean.setA("key").</li>
+     * <li>"a[3]" -- sets a value of indexed-property a on the specified bean. This effectively means bean.setA(3).</li>
      * </ul>
      *
-     * @param bean Bean whose property is to be modified
-     * @param name Possibly nested name of the property to be modified
+     * @param bean  Bean whose property is to be modified
+     * @param name  Possibly nested name of the property to be modified
      * @param value Value to which the property is to be set
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws IllegalArgumentException if a nested reference to a
-     *  property returns null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws IllegalArgumentException  if a nested reference to a property returns null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public void setNestedProperty(Object bean,
-                                         String name, final Object value)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" +
-                    bean.getClass() + "'");
-        }
-
+    public void setNestedProperty(Object bean, String name, final Object value)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         // Resolve nested references
         while (resolver.hasNested(name)) {
             final String next = resolver.next(name);
             Object nestedBean = null;
             if (bean instanceof Map) {
-                nestedBean = getPropertyOfMapBean((Map<?, ?>)bean, next);
+                nestedBean = getPropertyOfMapBean((Map<?, ?>) bean, next);
             } else if (resolver.isMapped(next)) {
                 nestedBean = getMappedProperty(bean, next);
             } else if (resolver.isIndexed(next)) {
@@ -1882,9 +1458,7 @@ public class PropertyUtilsBean {
                 nestedBean = getSimpleProperty(bean, next);
             }
             if (nestedBean == null) {
-                throw new NestedNullException
-                        ("Null property value for '" + name +
-                         "' on bean class '" + bean.getClass() + "'");
+                throw new NestedNullException("Null property value for '" + name + "' on bean class '" + bean.getClass() + "'");
             }
             bean = nestedBean;
             name = resolver.remove(name);
@@ -1902,89 +1476,58 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Sets the value of the specified property of the specified bean,
-     * no matter which property reference format is used, with no
-     * type conversions.
+     * Sets the value of the specified property of the specified bean, no matter which property reference format is used, with no type conversions.
      *
-     * @param bean Bean whose property is to be modified
-     * @param name Possibly indexed and/or nested name of the property
-     *  to be modified
+     * @param bean  Bean whose property is to be modified
+     * @param name  Possibly indexed and/or nested name of the property to be modified
      * @param value Value to which this property is to be set
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
     public void setProperty(final Object bean, final String name, final Object value)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         setNestedProperty(bean, name, value);
     }
 
     /**
-     * This method is called by method setNestedProperty when the current bean
-     * is found to be a Map object, and defines how to deal with setting
-     * a property on a Map.
+     * This method is called by method setNestedProperty when the current bean is found to be a Map object, and defines how to deal with setting a property on a
+     * Map.
      * <p>
      * The standard implementation here is to:
      * <ul>
      * <li>call bean.set(propertyName) for all propertyName values.</li>
-     * <li>throw an IllegalArgumentException if the property specifier
-     * contains MAPPED_DELIM or INDEXED_DELIM, as Map entries are essentially
-     * simple properties; mapping and indexing operations do not make sense
-     * when accessing a map (even thought the returned object may be a Map
-     * or an Array).</li>
+     * <li>throw an IllegalArgumentException if the property specifier contains MAPPED_DELIM or INDEXED_DELIM, as Map entries are essentially simple properties;
+     * mapping and indexing operations do not make sense when accessing a map (even thought the returned object may be a Map or an Array).</li>
      * </ul>
      * <p>
-     * The default behavior of beanutils 1.7.1 or later is for assigning to
-     * "a.b" to mean a.put(b, obj) always. However the behavior of beanutils
-     * version 1.6.0, 1.6.1, 1.7.0 was for "a.b" to mean a.setB(obj) if such
-     * a method existed, and a.put(b, obj) otherwise. In version 1.5 it meant
-     * a.put(b, obj) always (ie the same as the behavior in the current version).
-     * In versions prior to 1.5 it meant a.setB(obj) always. [yes, this is
-     * all <i>very</i> unfortunate]
+     * The default behavior of BeanUtils 1.7.1 or later is for assigning to "a.b" to mean a.put(b, obj) always. However the behavior of BeanUtils version 1.6.0,
+     * 1.6.1, 1.7.0 was for "a.b" to mean a.setB(obj) if such a method existed, and a.put(b, obj) otherwise. In version 1.5 it meant a.put(b, obj) always (ie
+     * the same as the behavior in the current version). In versions prior to 1.5 it meant a.setB(obj) always. [yes, this is all <em>very</em> unfortunate]
      * <p>
-     * Users who would like to customize the meaning of "a.b" in method
-     * setNestedProperty when a is a Map can create a custom subclass of
-     * this class and override this method to implement the behavior of
-     * their choice, such as restoring the pre-1.4 behavior of this class
-     * if they wish. When overriding this method, do not forget to deal
-     * with MAPPED_DELIM and INDEXED_DELIM characters in the propertyName.
+     * Users who would like to customize the meaning of "a.b" in method setNestedProperty when a is a Map can create a custom subclass of this class and
+     * override this method to implement the behavior of their choice, such as restoring the pre-1.4 behavior of this class if they wish. When overriding this
+     * method, do not forget to deal with MAPPED_DELIM and INDEXED_DELIM characters in the propertyName.
      * <p>
-     * Note, however, that the recommended solution for objects that
-     * implement Map but want their simple properties to come first is
-     * for <i>those</i> objects to override their get/put methods to implement
-     * that behavior, and <i>not</i> to solve the problem by modifying the
-     * default behavior of the PropertyUtilsBean class by overriding this
-     * method.
+     * Note, however, that the recommended solution for objects that implement Map but want their simple properties to come first is for <em>those</em> objects
+     * to override their get/put methods to implement that behavior, and <em>not</em> to solve the problem by modifying the default behavior of the
+     * PropertyUtilsBean class by overriding this method.
      *
-     * @param bean Map bean
+     * @param bean         Map bean
      * @param propertyName The property name
-     * @param value the property value
+     * @param value        the property value
+     * @throws IllegalArgumentException  when the propertyName is regarded as being invalid.
+     * @throws IllegalAccessException    just in case subclasses override this method to try to access real setter methods and find permission is denied.
+     * @throws InvocationTargetException just in case subclasses override this method to try to access real setter methods, and find it throws an exception when
+     *                                   invoked.
      *
-     * @throws IllegalArgumentException when the propertyName is regarded as
-     * being invalid.
-     *
-     * @throws IllegalAccessException just in case subclasses override this
-     * method to try to access real setter methods and find permission is denied.
-     *
-     * @throws InvocationTargetException just in case subclasses override this
-     * method to try to access real setter methods, and find it throws an
-     * exception when invoked.
-     *
-     * @throws NoSuchMethodException just in case subclasses override this
-     * method to try to access real setter methods, and want to fail if
-     * no simple method is available.
+     * @throws NoSuchMethodException     just in case subclasses override this method to try to access real setter methods, and want to fail if no simple method
+     *                                   is available.
      * @since 1.8.0
      */
     protected void setPropertyOfMapBean(final Map<String, Object> bean, String propertyName, final Object value)
-        throws IllegalArgumentException, IllegalAccessException,
-        InvocationTargetException, NoSuchMethodException {
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         if (resolver.isMapped(propertyName)) {
             final String name = resolver.getProperty(propertyName);
             if (name == null || name.isEmpty()) {
@@ -1992,11 +1535,8 @@ public class PropertyUtilsBean {
             }
         }
 
-        if (resolver.isIndexed(propertyName) ||
-            resolver.isMapped(propertyName)) {
-            throw new IllegalArgumentException(
-                    "Indexed or mapped properties are not supported on"
-                    + " objects of type Map: " + propertyName);
+        if (resolver.isIndexed(propertyName) || resolver.isMapped(propertyName)) {
+            throw new IllegalArgumentException("Indexed or mapped properties are not supported on" + " objects of type Map: " + propertyName);
         }
 
         bean.put(propertyName, value);
@@ -2005,10 +1545,8 @@ public class PropertyUtilsBean {
     /**
      * Configure the {@link Resolver} implementation used by BeanUtils.
      * <p>
-     * The {@link Resolver} handles the <i>property name</i>
-     * expressions and the implementation in use effectively
-     * controls the dialect of the <i>expression language</i>
-     * that BeanUtils recognizes.
+     * The {@link Resolver} handles the <em>property name</em> expressions and the implementation in use effectively controls the dialect of the <em>expression
+     * language</em> that BeanUtils recognizes.
      * <p>
      * {@link DefaultResolver} is the default implementation used.
      *
@@ -2024,36 +1562,22 @@ public class PropertyUtilsBean {
     }
 
     /**
-     * Sets the value of the specified simple property of the specified bean,
-     * with no type conversions.
+     * Sets the value of the specified simple property of the specified bean, with no type conversions.
      *
-     * @param bean Bean whose property is to be modified
-     * @param name Name of the property to be modified
+     * @param bean  Bean whose property is to be modified
+     * @param name  Name of the property to be modified
      * @param value Value to which the property should be set
-     *
-     * @throws IllegalAccessException if the caller does not have
-     *  access to the property accessor method
-     * @throws IllegalArgumentException if {@code bean} or
-     *  {@code name} is null
-     * @throws IllegalArgumentException if the property name is
-     *  nested or indexed
-     * @throws InvocationTargetException if the property accessor method
-     *  throws an exception
-     * @throws NoSuchMethodException if an accessor method for this
-     *  property cannot be found
+     * @throws IllegalAccessException    if the caller does not have access to the property accessor method
+     * @throws IllegalArgumentException  if {@code bean} or {@code name} is null
+     * @throws IllegalArgumentException  if the property name is nested or indexed
+     * @throws InvocationTargetException if the property accessor method throws an exception
+     * @throws NoSuchMethodException     if an accessor method for this property cannot be found
      */
-    public void setSimpleProperty(final Object bean,
-                                         final String name, final Object value)
-            throws IllegalAccessException, InvocationTargetException,
-        NoSuchMethodException {
-        if (bean == null) {
-            throw new IllegalArgumentException("No bean specified");
-        }
+    public void setSimpleProperty(final Object bean, final String name, final Object value)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Objects.requireNonNull(bean, "bean");
+        Objects.requireNonNull(name, "name");
         final Class<?> beanClass = bean.getClass();
-        if (name == null) {
-            throw new IllegalArgumentException("No name specified for bean class '" + beanClass + "'");
-        }
-
         // Validate the syntax of the property name
         if (resolver.hasNested(name)) {
             throw new IllegalArgumentException("Nested property names are not allowed: Property '" + name + "' on bean class '" + beanClass + "'");
@@ -2086,12 +1610,10 @@ public class PropertyUtilsBean {
         }
 
         // Call the property setter method
-        final Object[] values = new Object[1];
-        values[0] = value;
         if (LOG.isTraceEnabled()) {
             final String valueClassName = value == null ? "<null>" : value.getClass().getName();
             LOG.trace("setSimpleProperty: Invoking method " + writeMethod + " with value " + value + " (class " + valueClassName + ")");
         }
-        invokeMethod(writeMethod, bean, values);
+        invokeMethod(writeMethod, bean, value);
     }
 }

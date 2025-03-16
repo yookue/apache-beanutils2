@@ -23,11 +23,12 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import org.apache.commons.beanutils2.DynaBean;
+import org.apache.commons.beanutils2.DynaClass;
 
 /**
  * <p>
- * Implementation of {@code DynaClass} for DynaBeans that wrap the {@code java.sql.Row</code> objects of a <code>java.sql.ResultSet}. The normal usage pattern
- * is something like:
+ * Implements {@link DynaClass} for DynaBeans that wrap the {@code java.sql.Row</code> objects of a <code>java.sql.ResultSet}. The normal usage pattern is
+ * something like:
  * </p>
  *
  * <pre>
@@ -75,7 +76,6 @@ import org.apache.commons.beanutils2.DynaBean;
  *     results.add(newRow);
  *   }
  * </pre>
- *
  */
 public class ResultSetDynaClass extends AbstractJdbcDynaClass {
 
@@ -90,12 +90,11 @@ public class ResultSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new ResultSetDynaClass for the specified {@code ResultSet}. The property names corresponding to column names in the result set will be lower
+     * Constructs a new ResultSetDynaClass for the specified {@code ResultSet}. The property names corresponding to column names in the result set will be lower
      * cased.
      * </p>
      *
      * @param resultSet The result set to be wrapped
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      */
@@ -105,7 +104,7 @@ public class ResultSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new ResultSetDynaClass for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will be
+     * Constructs a new ResultSetDynaClass for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will be
      * lower cased or not, depending on the specified {@code lowerCase} value.
      * </p>
      *
@@ -117,7 +116,6 @@ public class ResultSetDynaClass extends AbstractJdbcDynaClass {
      *
      * @param resultSet The result set to be wrapped
      * @param lowerCase Should property names be lower cased?
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      */
@@ -127,7 +125,7 @@ public class ResultSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new ResultSetDynaClass for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will be
+     * Constructs a new ResultSetDynaClass for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will be
      * lower cased or not, depending on the specified {@code lowerCase} value.
      * </p>
      *
@@ -140,7 +138,6 @@ public class ResultSetDynaClass extends AbstractJdbcDynaClass {
      * @param resultSet      The result set to be wrapped
      * @param lowerCase      Should property names be lower cased?
      * @param useColumnLabel true if the column label should be used, otherwise false
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      * @since 1.8.3
@@ -153,7 +150,7 @@ public class ResultSetDynaClass extends AbstractJdbcDynaClass {
     }
 
     /**
-     * Get a value from the {@link ResultSet} for the specified property name.
+     * Gets a value from the {@link ResultSet} for the specified property name.
      *
      * @param name The property name
      * @return The value
@@ -167,7 +164,7 @@ public class ResultSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Return the result set we are wrapping.
+     * Gets the result set we are wrapping.
      * </p>
      */
     ResultSet getResultSet() {

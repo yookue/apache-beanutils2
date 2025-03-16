@@ -19,7 +19,6 @@ package org.apache.commons.beanutils2;
 
 /**
  * Specialist test bean for complex nested properties.
- *
  */
 
 public class NestedTestBean {
@@ -28,7 +27,7 @@ public class NestedTestBean {
 
     private String testString = "NOT SET";
 
-    private boolean testBoolean = false;
+    private boolean testBoolean;
 
     private NestedTestBean[] indexedBeans;
 

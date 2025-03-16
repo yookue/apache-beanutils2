@@ -19,22 +19,21 @@ package org.apache.commons.beanutils2;
 import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * <p>
- * An implementation of the {@code IntrospectionContext} interface used by
- * {@link PropertyUtilsBean} when doing introspection of a bean class.
+ * An implementation of the {@code IntrospectionContext} interface used by {@link PropertyUtilsBean} when doing introspection of a bean class.
  * </p>
  * <p>
- * This class implements the methods required by the
- * {@code IntrospectionContext} interface in a straight-forward manner
- * based on a map. It is used internally only. It is not thread-safe.
+ * This class implements the methods required by the {@code IntrospectionContext} interface in a straight-forward manner based on a map. It is used internally
+ * only. It is not thread-safe.
  * </p>
  *
  * @since 1.9
  */
-class DefaultIntrospectionContext implements IntrospectionContext {
+final class DefaultIntrospectionContext implements IntrospectionContext {
     /** The current class for introspection. */
     private final Class<?> currentClass;
 
@@ -43,8 +42,7 @@ class DefaultIntrospectionContext implements IntrospectionContext {
 
     /**
      *
-     * Creates a new instance of {@code DefaultIntrospectionContext} and sets
-     * the current class for introspection.
+     * Creates a new instance of {@code DefaultIntrospectionContext} and sets the current class for introspection.
      *
      * @param cls the current class
      */
@@ -55,20 +53,13 @@ class DefaultIntrospectionContext implements IntrospectionContext {
 
     @Override
     public void addPropertyDescriptor(final PropertyDescriptor desc) {
-        if (desc == null) {
-            throw new IllegalArgumentException(
-                    "Property descriptor must not be null!");
-        }
+        Objects.requireNonNull(desc, "desc");
         descriptors.put(desc.getName(), desc);
     }
 
     @Override
     public void addPropertyDescriptors(final PropertyDescriptor[] descs) {
-        if (descs == null) {
-            throw new IllegalArgumentException(
-                    "Array with descriptors must not be null!");
-        }
-
+        Objects.requireNonNull(descs, "descs");
         for (final PropertyDescriptor desc : descs) {
             addPropertyDescriptor(desc);
         }
@@ -80,8 +71,7 @@ class DefaultIntrospectionContext implements IntrospectionContext {
     }
 
     /**
-     * Returns an array with all descriptors added to this context. This method
-     * is used to obtain the results of introspection.
+     * Returns an array with all descriptors added to this context. This method is used to obtain the results of introspection.
      *
      * @return an array with all known property descriptors
      */

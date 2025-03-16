@@ -17,7 +17,6 @@
 
 package org.apache.commons.beanutils2;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +24,9 @@ import java.util.Map;
 
 /**
  * General purpose test bean for JUnit tests for the "beanutils" component.
- *
  */
 
-public class TestBean implements Serializable {
+public class TestBean {
 
     /*
      * Another nested reference to a bean containing mapp properties
@@ -45,7 +43,7 @@ public class TestBean implements Serializable {
     /**
      * A static variable that is accessed and updated via static methods for MethodUtils testing.
      */
-    private static int counter = 0;
+    private static int counter;
 
     /**
      * Gets the current value of the counter.
@@ -151,44 +149,44 @@ public class TestBean implements Serializable {
     /**
      * A mapped property with only a getter and setter for a Map.
      */
-    private Map<String, Object> mapProperty = null;
+    private Map<String, Object> mapProperty;
 
     /**
      * A mapped property that has String keys and Object values.
      */
-    private HashMap<String, Object> mappedObjects = null;
+    private HashMap<String, Object> mappedObjects;
 
     /**
      * A mapped property that has String keys and String values.
      */
-    private HashMap<String, String> mappedProperty = null;
+    private HashMap<String, String> mappedProperty;
 
     /**
      * A mapped property that has String keys and int values.
      */
-    private HashMap<String, Integer> mappedIntProperty = null;
+    private HashMap<String, Integer> mappedIntProperty;
 
     /**
      * A nested reference to another test bean (populated as needed).
      */
-    private TestBean nested = null;
+    private TestBean nested;
 
     /**
      * Another nested reference to another test bean,
      */
-    private TestBean anotherNested = null;
+    private TestBean anotherNested;
 
     /**
      * Another nested reference to another test bean,
      */
-    private DynaBean nestedDynaBean = null;
+    private DynaBean nestedDynaBean;
 
-    private MappedTestBean mappedNested = null;
+    private MappedTestBean mappedNested;
 
     /**
      * A String property with an initial value of null.
      */
-    private String nullProperty = null;
+    private String nullProperty;
 
     /**
      * A read-only String property.
@@ -228,7 +226,7 @@ public class TestBean implements Serializable {
      * described in the JavaBeans Specification, this will be considered a read-only boolean property, using isInvalidBoolean() as the getter.
      * </p>
      */
-    private boolean invalidBoolean = false;
+    private boolean invalidBoolean;
 
     public TestBean() {
         listIndexed.add("String 0");
@@ -507,11 +505,7 @@ public class TestBean implements Serializable {
     }
 
     public void setInvalidBoolean(final String invalidBoolean) {
-        if ("true".equalsIgnoreCase(invalidBoolean) || "yes".equalsIgnoreCase(invalidBoolean) || "1".equalsIgnoreCase(invalidBoolean)) {
-            this.invalidBoolean = true;
-        } else {
-            this.invalidBoolean = false;
-        }
+        this.invalidBoolean = Boolean.parseBoolean(invalidBoolean) || "yes".equalsIgnoreCase(invalidBoolean) || "1".equalsIgnoreCase(invalidBoolean);
     }
 
     public void setLongProperty(final long longProperty) {

@@ -41,9 +41,8 @@ import java.util.Map;
 
 /**
  * <p>
- * Mock object that implements enough of {@code java.sql.ResultSet} to exercise the {@link ResultSetDynaClass} functionality.
+ * Mock object that implements enough of {@link java.sql.ResultSet} to exercise the {@link ResultSetDynaClass} functionality.
  * </p>
- *
  */
 
 public class TestResultSet implements InvocationHandler {
@@ -72,7 +71,7 @@ public class TestResultSet implements InvocationHandler {
     /**
      * Current row number (0 means "before the first one").
      */
-    protected int row = 0;
+    protected int row;
 
     /**
      * The constant (per run) value used to initialize date/time/timestamp.
@@ -315,47 +314,38 @@ public class TestResultSet implements InvocationHandler {
         if (row > 5) {
             throw new SQLException("No current row");
         }
-        if ("bigDecimalProperty".equals(columnName)) {
+        switch (columnName) {
+        case "bigDecimalProperty":
             return new BigDecimal(123.45);
-        }
-        if ("booleanProperty".equals(columnName)) {
+        case "booleanProperty":
             if (row % 2 == 0) {
                 return Boolean.TRUE;
             }
             return Boolean.FALSE;
-        }
-        if ("byteProperty".equals(columnName)) {
+        case "byteProperty":
             return Byte.valueOf((byte) row);
-        }
-        if ("dateProperty".equals(columnName)) {
+        case "dateProperty":
             return new Date(timestampMillis);
-        }
-        if ("doubleProperty".equals(columnName)) {
+        case "doubleProperty":
             return Double.valueOf(321.0);
-        }
-        if ("floatProperty".equals(columnName)) {
+        case "floatProperty":
             return Float.valueOf((float) 123.0);
-        }
-        if ("intProperty".equals(columnName)) {
+        case "intProperty":
             return Integer.valueOf(100 + row);
-        }
-        if ("longProperty".equals(columnName)) {
+        case "longProperty":
             return Long.valueOf(200 + row);
-        }
-        if ("nullProperty".equals(columnName)) {
+        case "nullProperty":
             return null;
-        }
-        if ("shortProperty".equals(columnName)) {
+        case "shortProperty":
             return Short.valueOf((short) (300 + row));
-        }
-        if ("stringProperty".equals(columnName)) {
+        case "stringProperty":
             return "This is a string";
-        }
-        if ("timeProperty".equals(columnName)) {
+        case "timeProperty":
             return new Time(timestampMillis);
-        }
-        if ("timestampProperty".equals(columnName)) {
+        case "timestampProperty":
             return new Timestamp(timestampMillis);
+        default:
+            break;
         }
         throw new SQLException("Unknown column name " + columnName);
     }
@@ -472,30 +462,26 @@ public class TestResultSet implements InvocationHandler {
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         final String methodName = method.getName();
-        if ("close".equals(methodName)) {
+        switch (methodName) {
+        case "close":
             return null;
-        }
-        if ("getMetaData".equals(methodName)) {
+        case "getMetaData":
             return getMetaData();
-        }
-        if ("getObject".equals(methodName)) {
+        case "getObject":
             return getObject(columnName(args[0]));
-        }
-        if ("getDate".equals(methodName)) {
+        case "getDate":
             return getDate(columnName(args[0]));
-        }
-        if ("getTime".equals(methodName)) {
+        case "getTime":
             return getTime(columnName(args[0]));
-        }
-        if ("getTimestamp".equals(methodName)) {
+        case "getTimestamp":
             return getTimestamp(columnName(args[0]));
-        }
-        if ("next".equals(methodName)) {
+        case "next":
             return next() ? Boolean.TRUE : Boolean.FALSE;
-        }
-        if ("updateObject".equals(methodName)) {
+        case "updateObject":
             updateObject((String) args[0], args[1]);
             return null;
+        default:
+            break;
         }
 
         throw new UnsupportedOperationException(methodName + " not implemented");

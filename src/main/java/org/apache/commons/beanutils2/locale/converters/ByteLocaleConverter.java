@@ -33,6 +33,13 @@ public class ByteLocaleConverter extends DecimalLocaleConverter<Byte> {
      */
     public static class Builder extends DecimalLocaleConverter.Builder<Builder, Byte> {
 
+        /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // empty
+        }
+
         @Override
         public ByteLocaleConverter get() {
             return new ByteLocaleConverter(defaultValue, locale, pattern, useDefault || defaultValue != null, localizedPattern);
@@ -59,9 +66,8 @@ public class ByteLocaleConverter extends DecimalLocaleConverter<Byte> {
      * @param value   The input object to be converted
      * @param pattern The pattern is used for the conversion
      * @return The converted value
-     *
      * @throws ConversionException if conversion cannot be performed successfully
-     * @throws ParseException                                    if an error occurs parsing a String to a Number
+     * @throws ParseException      if an error occurs parsing a String to a Number
      */
     @Override
     protected Byte parse(final Object value, final String pattern) throws ParseException {

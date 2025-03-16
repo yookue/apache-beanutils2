@@ -18,8 +18,7 @@
 package org.apache.commons.beanutils2;
 
 /**
- * Plain old java bean (POJO) for microbenchmarks.
- *
+ * Plain old Java bean (POJO) for microbenchmarks.
  */
 
 public class BenchBean {

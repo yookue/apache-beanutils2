@@ -19,16 +19,13 @@ package org.apache.commons.beanutils2.priv;
 
 /**
  * <p>
- * This class is designed to test the default access jvm problem workaround. The issue is that public methods of a public subclass contained in a default access
+ * This class is designed to test the default access JVM problem workaround. The issue is that public methods of a public subclass contained in a default access
  * superclass are returned by reflection but an IllegalAccessException is thrown when they are invoked.
  * </p>
- *
  * <p>
  * This is the default access superclass
  * </p>
- *
  */
-
 class PackageBean {
 
     /**

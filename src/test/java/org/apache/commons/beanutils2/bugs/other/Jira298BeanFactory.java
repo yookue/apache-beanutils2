@@ -16,11 +16,10 @@
  */
 package org.apache.commons.beanutils2.bugs.other;
 
-import org.apache.commons.beanutils2.bugs.Jira298TestCase;
+import org.apache.commons.beanutils2.bugs.Jira298Test;
 
 /**
- * Factory which creates beans for {@link Jira298TestCase}.
- *
+ * Factory which creates beans for {@link Jira298Test}.
  */
 public class Jira298BeanFactory {
 

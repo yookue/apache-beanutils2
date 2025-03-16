@@ -19,11 +19,9 @@ package org.apache.commons.beanutils2.converters;
 import java.time.Period;
 
 /**
- * {@link org.apache.commons.beanutils2.Converter} implementation that handles conversion
- * to and from <b>java.time.Period</b> objects.
+ * {@link org.apache.commons.beanutils2.Converter} implementation that handles conversion to and from <strong>java.time.Period</strong> objects.
  * <p>
- * Can be configured to either return a <i>default value</i> or throw a
- * {@code ConversionException} if a conversion error occurs.
+ * Can be configured to either return a <em>default value</em> or throw a {@code ConversionException} if a conversion error occurs.
  * </p>
  *
  * @since 2.0
@@ -32,29 +30,27 @@ import java.time.Period;
 public final class PeriodConverter extends AbstractConverter<Period> {
 
     /**
-     * Constructs a <b>java.time.Period</b> <i>Converter</i> that throws
-     * a {@code ConversionException} if an error occurs.
+     * Constructs a <strong>java.time.Period</strong> <em>Converter</em> that throws a {@code ConversionException} if an error occurs.
      */
     public PeriodConverter() {
     }
 
     /**
-     * Constructs a <b>java.time.Period</b> <i>Converter</i> that returns
-     * a default value if an error occurs.
+     * Constructs a <strong>java.time.Period</strong> <em>Converter</em> that returns a default value if an error occurs.
      *
-     * @param defaultValue The default value to be returned
-     * if the value to be converted is missing or an error
-     * occurs converting the value.
+     * @param defaultValue The default value to be returned if the value to be converted is missing or an error occurs converting the value.
      */
     public PeriodConverter(final Period defaultValue) {
         super(defaultValue);
     }
 
     /**
-     * <p>Converts a java.time.Period or object into a String.</p>
+     * <p>
+     * Converts a java.time.Period or object into a String.
+     * </p>
      *
-     * @param <T> Target type of the conversion.
-     * @param type Data type to which this value should be converted.
+     * @param <T>   Target type of the conversion.
+     * @param type  Data type to which this value should be converted.
      * @param value The input value to be converted.
      * @return The converted value.
      * @throws Throwable if an error occurs converting to the specified type
@@ -63,7 +59,7 @@ public final class PeriodConverter extends AbstractConverter<Period> {
     @Override
     protected <T> T convertToType(final Class<T> type, final Object value) throws Throwable {
         if (Period.class.equals(type)) {
-            return type.cast(Period.parse((String.valueOf(value))));
+            return type.cast(Period.parse(String.valueOf(value)));
         }
 
         throw conversionException(type, value);

@@ -22,6 +22,7 @@ import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -33,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Standard {@link org.apache.commons.beanutils2.locale.LocaleConverter} implementation that converts an incoming locale-sensitive String into a
- * {@code java.util.Date} object, optionally using a default value or throwing a {@link org.apache.commons.beanutils2.ConversionException} if a conversion error
+ * {@link java.util.Date} object, optionally using a default value or throwing a {@link org.apache.commons.beanutils2.ConversionException} if a conversion error
  * occurs.
  *
  * @param <D> The Date type.
@@ -49,7 +50,14 @@ public class DateLocaleConverter<D extends Date> extends BaseLocaleConverter<D> 
     public static class Builder<B extends Builder<B, D>, D extends Date> extends BaseLocaleConverter.Builder<B, D> {
 
         /** Should the date conversion be lenient? */
-        protected boolean lenient;
+        private boolean lenient;
+
+        /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // empty
+        }
 
         /**
          * Gets a new instance.
@@ -66,10 +74,20 @@ public class DateLocaleConverter<D extends Date> extends BaseLocaleConverter<D> 
         }
 
         /**
+         * Tests whether date formatting is lenient.
+         *
+         * @return true if the {@code DateFormat} used for formatting is lenient
+         * @see java.text.DateFormat#isLenient()
+         */
+        public boolean isLenient() {
+            return lenient;
+        }
+
+        /**
          * Sets the leniency policy.
          *
          * @param lenient the leniency policy.
-         * @return this.
+         * @return {@code this} instance.
          */
         public B setLenient(final boolean lenient) {
             this.lenient = lenient;
@@ -113,11 +131,11 @@ public class DateLocaleConverter<D extends Date> extends BaseLocaleConverter<D> 
      * Constructs a new instance.
      *
      * @param defaultValue default value.
-     * @param locale locale.
-     * @param pattern pattern.
-     * @param useDefault use the default.
-     * @param locPattern localized pattern.
-     * @param lenient leniency policy.
+     * @param locale       locale.
+     * @param pattern      pattern.
+     * @param useDefault   use the default.
+     * @param locPattern   localized pattern.
+     * @param lenient      leniency policy.
      */
     protected DateLocaleConverter(final D defaultValue, final Locale locale, final String pattern, final boolean useDefault, final boolean locPattern,
             final boolean lenient) {
@@ -176,7 +194,7 @@ public class DateLocaleConverter<D extends Date> extends BaseLocaleConverter<D> 
                 }
             } else if (thisChar == '\'') {
                 quoted = true;
-            } else if ((thisChar >= 'a' && thisChar <= 'z') || (thisChar >= 'A' && thisChar <= 'Z')) {
+            } else if (thisChar >= 'a' && thisChar <= 'z' || thisChar >= 'A' && thisChar <= 'Z') {
                 final int index = fromChars.indexOf(thisChar);
                 if (index == -1) {
                     throw new IllegalArgumentException("Illegal pattern character '" + thisChar + "'");
@@ -197,7 +215,7 @@ public class DateLocaleConverter<D extends Date> extends BaseLocaleConverter<D> 
      * Tests whether date formatting is lenient.
      *
      * @return true if the {@code DateFormat} used for formatting is lenient
-     * @see java.text.DateFormat#isLenient
+     * @see java.text.DateFormat#isLenient()
      */
     public boolean isLenient() {
         return isLenient;
@@ -210,7 +228,7 @@ public class DateLocaleConverter<D extends Date> extends BaseLocaleConverter<D> 
      * @param pattern The pattern is used for the conversion
      * @return the converted Date value
      * @throws ConversionException if conversion cannot be performed successfully
-     * @throws ParseException                                    if an error occurs parsing
+     * @throws ParseException      if an error occurs parsing
      */
     @Override
     protected D parse(final Object value, String pattern) throws ParseException {
@@ -220,8 +238,8 @@ public class DateLocaleConverter<D extends Date> extends BaseLocaleConverter<D> 
         }
 
         // Handle Calendar
-        if (value instanceof java.util.Calendar) {
-            return (D) ((java.util.Calendar) value).getTime();
+        if (value instanceof Calendar) {
+            return (D) ((Calendar) value).getTime();
         }
 
         if (localizedPattern) {

@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-
 package org.apache.commons.beanutils2;
 
 /**
- * <p>Utility methods for converting String scalar values to objects of the
- * specified Class, String arrays to arrays of the specified Class.</p>
+ * <p>
+ * Utility methods for converting String scalar values to objects of the specified Class, String arrays to arrays of the specified Class.
+ * </p>
  *
- * <p>For more details, see {@code ConvertUtilsBean} which provides the
- * implementations for these methods.</p>
+ * <p>
+ * For more details, see {@code ConvertUtilsBean} which provides the implementations for these methods.
+ * </p>
  *
  * @see ConvertUtilsBean
  */
-public class ConvertUtils {
+public final class ConvertUtils {
 
     /**
-     * <p>Converts the specified value into a String.</p>
+     * <p>
+     * Converts the specified value into a String.
+     * </p>
      *
-     * <p>For more details see {@code ConvertUtilsBean}.</p>
+     * <p>
+     * For more details see {@code ConvertUtilsBean}.
+     * </p>
      *
      * @param value Value to be converted (may be null)
      * @return The converted String value or null if value is null
-     *
      * @see ConvertUtilsBean#convert(Object)
      */
     public static String convert(final Object value) {
@@ -44,13 +48,13 @@ public class ConvertUtils {
     }
 
     /**
-     * <p>Converts the value to an object of the specified class (if
-     * possible).</p>
+     * <p>
+     * Converts the value to an object of the specified class (if possible).
+     * </p>
      *
-     * @param value Value to be converted (may be null)
+     * @param value      Value to be converted (may be null)
      * @param targetType Class of the value to be converted to (must not be null)
      * @return The converted value
-     *
      * @throws ConversionException if thrown by an underlying Converter
      */
     public static Object convert(final Object value, final Class<?> targetType) {
@@ -58,15 +62,17 @@ public class ConvertUtils {
     }
 
     /**
-     * <p>Converts the specified value to an object of the specified class (if
-     * possible).  Otherwise, return a String representation of the value.</p>
+     * <p>
+     * Converts the specified value to an object of the specified class (if possible). Otherwise, return a String representation of the value.
+     * </p>
      *
-     * <p>For more details see {@code ConvertUtilsBean}.</p>
+     * <p>
+     * For more details see {@code ConvertUtilsBean}.
+     * </p>
      *
      * @param value Value to be converted (may be null)
      * @param clazz Java class to be converted to (must not be null)
      * @return The converted value
-     *
      * @see ConvertUtilsBean#convert(String, Class)
      */
     public static Object convert(final String value, final Class<?> clazz) {
@@ -74,15 +80,17 @@ public class ConvertUtils {
     }
 
     /**
-     * <p>Convert an array of specified values to an array of objects of the
-     * specified class (if possible).</p>
+     * <p>
+     * Convert an array of specified values to an array of objects of the specified class (if possible).
+     * </p>
      *
-     * <p>For more details see {@code ConvertUtilsBean}.</p>
+     * <p>
+     * For more details see {@code ConvertUtilsBean}.
+     * </p>
      *
      * @param values Array of values to be converted
-     * @param clazz Java array or element class to be converted to (must not be null)
+     * @param clazz  Java array or element class to be converted to (must not be null)
      * @return The converted value
-     *
      * @see ConvertUtilsBean#convert(String[], Class)
      */
     public static Object convert(final String[] values, final Class<?> clazz) {
@@ -90,10 +98,13 @@ public class ConvertUtils {
     }
 
     /**
-     * <p>Remove all registered {@link Converter}s, and re-establish the
-     * standard Converters.</p>
+     * <p>
+     * Remove all registered {@link Converter}s, and re-establish the standard Converters.
+     * </p>
      *
-     * <p>For more details see {@code ConvertUtilsBean}.</p>
+     * <p>
+     * For more details see {@code ConvertUtilsBean}.
+     * </p>
      *
      * @see ConvertUtilsBean#deregister()
      */
@@ -102,10 +113,13 @@ public class ConvertUtils {
     }
 
     /**
-     * <p>Remove any registered {@link Converter} for the specified destination
-     * {@code Class}.</p>
+     * <p>
+     * Remove any registered {@link Converter} for the specified destination {@code Class}.
+     * </p>
      *
-     * <p>For more details see {@code ConvertUtilsBean}.</p>
+     * <p>
+     * For more details see {@code ConvertUtilsBean}.
+     * </p>
      *
      * @param clazz Class for which to remove a registered Converter
      * @see ConvertUtilsBean#deregister(Class)
@@ -115,11 +129,10 @@ public class ConvertUtils {
     }
 
     /**
-     * Look up and return any registered {@link Converter} for the specified
-     * source and destination class; if there is no registered Converter,
-     * return {@code null}.
+     * Look up and return any registered {@link Converter} for the specified source and destination class; if there is no registered Converter, return
+     * {@code null}.
      *
-     * @param <T> The converter type.
+     * @param <T>        The converter type.
      * @param sourceType Class of the value being converted
      * @param targetType Class of the value to be converted to
      * @return The registered {@link Converter} or {@code null} if not found
@@ -129,13 +142,15 @@ public class ConvertUtils {
     }
 
     /**
-     * <p>Look up and return any registered {@link Converter} for the specified
-     * destination class; if there is no registered Converter, return
-     * {@code null}.</p>
+     * <p>
+     * Look up and return any registered {@link Converter} for the specified destination class; if there is no registered Converter, return {@code null}.
+     * </p>
      *
-     * <p>For more details see {@code ConvertUtilsBean}.</p>
+     * <p>
+     * For more details see {@code ConvertUtilsBean}.
+     * </p>
      *
-     * @param <T> The converter type.
+     * @param <T>   The converter type.
      * @param clazz Class for which to return a registered Converter
      * @return The registered {@link Converter} or {@code null} if not found
      * @see ConvertUtilsBean#lookup(Class)
@@ -145,11 +160,10 @@ public class ConvertUtils {
     }
 
     /**
-     * Change primitive Class types to the associated wrapper class. This is
-     * useful for concrete converter implementations which typically treat
-     * primitive types like their corresponding wrapper types.
+     * Change primitive Class types to the associated wrapper class. This is useful for concrete converter implementations which typically treat primitive types
+     * like their corresponding wrapper types.
      *
-     * @param <T> The type to be checked.
+     * @param <T>  The type to be checked.
      * @param type The class type to check.
      * @return The converted type.
      * @since 1.9
@@ -190,18 +204,24 @@ public class ConvertUtils {
     }
 
     /**
-     * <p>Register a custom {@link Converter} for the specified destination
-     * {@code Class}, replacing any previously registered Converter.</p>
+     * <p>
+     * Register a custom {@link Converter} for the specified destination {@code Class}, replacing any previously registered Converter.
+     * </p>
      *
-     * <p>For more details see {@code ConvertUtilsBean}.</p>
+     * <p>
+     * For more details see {@code ConvertUtilsBean}.
+     * </p>
      *
-     * @param <T> The converter type.
+     * @param <T>       The converter type.
      * @param converter Converter to be registered
-     * @param clazz Destination class for conversions performed by this
-     *  Converter
+     * @param clazz     Destination class for conversions performed by this Converter
      * @see ConvertUtilsBean#register(Converter, Class)
      */
     public static <T> void register(final Converter<T> converter, final Class<T> clazz) {
         ConvertUtilsBean.getInstance().register(converter, clazz);
+    }
+
+    private ConvertUtils() {
+        // empty
     }
 }

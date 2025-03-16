@@ -20,11 +20,10 @@ import java.util.HashMap;
 
 /**
  * Test POJO with mapped property
- *
  */
 public class SomeMappedPojo {
 
-    private HashMap<String, String> mappedProperty = null;
+    private HashMap<String, String> mappedProperty;
 
     public String getMappedProperty(final String key) {
         // Create the map the very first time

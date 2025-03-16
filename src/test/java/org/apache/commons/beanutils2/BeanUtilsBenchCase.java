@@ -21,55 +21,38 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit Test Case containing microbenchmarks for BeanUtils.
- *
  */
-public class BeanUtilsBenchCase extends TestCase {
-
-    /**
-     * Creates the tests included in this test suite.
-     */
-    public static Test suite() {
-        return new TestSuite(BeanUtilsBenchCase.class);
-    }
+public class BeanUtilsBenchCase {
 
     // Basic loop counter
     private long counter = 100000;
 
     // DynaClass for inDyna and outDyna
-    private DynaClass dynaClass = null;
+    private DynaClass dynaClass;
 
     // Input objects that have identical sets of properties and values.
-    private BenchBean inBean = null;
-    private DynaBean inDyna = null;
-    private Map<String, Object> inMap = null; // Map of Objects requiring no conversion
-    private Map<String, String> inStrs = null; // Map of Strings requiring conversion
+    private BenchBean inBean;
+    private DynaBean inDyna;
+    private Map<String, Object> inMap; // Map of Objects requiring no conversion
+    private Map<String, String> inStrs; // Map of Strings requiring conversion
 
     // Output objects that have identical sets of properties.
-    private BenchBean outBean = null;
-    private DynaBean outDyna = null;
+    private BenchBean outBean;
+    private DynaBean outDyna;
 
     // BeanUtilsBean instance to be used
-    private BeanUtilsBean bu = null;
-
-    /**
-     * Constructs a new instance of this test case.
-     *
-     * @param name Name of the test case
-     */
-    public BeanUtilsBenchCase(final String name) {
-        super(name);
-    }
+    private BeanUtilsBean bu;
 
     /**
      * Sets up instance variables required by this test case.
      */
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
 
         // Set up loop counter (if property specified)
@@ -124,7 +107,7 @@ public class BeanUtilsBenchCase extends TestCase {
     /**
      * Tear down instance variables required by this test case.
      */
-    @Override
+    @AfterEach
     public void tearDown() {
         dynaClass = null;
         inBean = null;
@@ -136,6 +119,7 @@ public class BeanUtilsBenchCase extends TestCase {
     }
 
     // Time copyProperties() from a bean
+    @Test
     public void testCopyPropertiesBean() throws Exception {
 
         long startMillis;
@@ -166,6 +150,7 @@ public class BeanUtilsBenchCase extends TestCase {
     }
 
     // Time copyProperties() from a DynaBean
+    @Test
     public void testCopyPropertiesDyna() throws Exception {
 
         long startMillis;
@@ -196,6 +181,7 @@ public class BeanUtilsBenchCase extends TestCase {
     }
 
     // Time copyProperties() from a Map of Objects
+    @Test
     public void testCopyPropertiesMap() throws Exception {
 
         long startMillis;
@@ -226,6 +212,7 @@ public class BeanUtilsBenchCase extends TestCase {
     }
 
     // Time copyProperties() from a Map of Strings
+    @Test
     public void testCopyPropertiesStrs() throws Exception {
 
         long startMillis;
@@ -256,6 +243,7 @@ public class BeanUtilsBenchCase extends TestCase {
     }
 
     // Time populate() from a Map of Objects
+    @Test
     public void testPopulateMap() throws Exception {
 
         long startMillis;
@@ -287,6 +275,7 @@ public class BeanUtilsBenchCase extends TestCase {
 
     // Time populate() from a Map of Strings
     // NOTE - This simulates what Struts does when processing form beans
+    @Test
     public void testPopulateStrs() throws Exception {
 
         long startMillis;

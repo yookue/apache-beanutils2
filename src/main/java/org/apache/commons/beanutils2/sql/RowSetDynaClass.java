@@ -30,9 +30,9 @@ import org.apache.commons.beanutils2.DynaProperty;
 
 /**
  * <p>
- * Implementation of {@link DynaClass} that creates an in-memory collection of {@link DynaBean}s representing the results of an SQL query. Once the
- * {@link DynaClass} instance has been created, the JDBC {@code ResultSet} and {@code Statement} on which it is based can be closed, and the underlying
- * {@code Connection} can be returned to its connection pool (if you are using one).
+ * Implements {@link DynaClass} to create an in-memory collection of {@link DynaBean}s representing the results of an SQL query. Once the {@link DynaClass}
+ * instance has been created, the JDBC {@code ResultSet} and {@code Statement} on which it is based can be closed, and the underlying {@code Connection} can be
+ * returned to its connection pool (if you are using one).
  * </p>
  *
  * <p>
@@ -65,8 +65,6 @@ import org.apache.commons.beanutils2.DynaProperty;
  */
 public class RowSetDynaClass extends AbstractJdbcDynaClass {
 
-    private static final long serialVersionUID = 1L;
-
     /**
      * <p>
      * Limits the size of the returned list. The call to {@code getRows()} will return at most limit number of rows. If less than or equal to 0, does not limit
@@ -83,12 +81,11 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to column names in the result set will be
+     * Constructs a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to column names in the result set will be
      * lower cased.
      * </p>
      *
      * @param resultSet The result set to be wrapped
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      */
@@ -98,7 +95,7 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will
+     * Constructs a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will
      * be lower cased or not, depending on the specified {@code lowerCase} value.
      * </p>
      *
@@ -107,7 +104,6 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
      *
      * @param resultSet The result set to be wrapped
      * @param lowerCase Should property names be lower cased?
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      */
@@ -117,7 +113,7 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will
+     * Constructs a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will
      * be lower cased or not, depending on the specified {@code lowerCase} value.
      * </p>
      *
@@ -130,7 +126,6 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
      * @param resultSet      The result set to be wrapped
      * @param lowerCase      Should property names be lower cased?
      * @param useColumnLabel true if the column label should be used, otherwise false
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      * @since 1.8.3
@@ -141,7 +136,7 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will
+     * Constructs a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will
      * be lower cased or not, depending on the specified {@code lowerCase} value.
      * </p>
      *
@@ -154,7 +149,6 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
      * @param resultSet The result set to be wrapped
      * @param lowerCase Should property names be lower cased?
      * @param limit     Maximum limit for the {@code List} of {@link DynaBean}
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      */
@@ -164,7 +158,7 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will
+     * Constructs a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to the column names in the result set will
      * be lower cased or not, depending on the specified {@code lowerCase} value.
      * </p>
      *
@@ -178,7 +172,6 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
      * @param lowerCase      Should property names be lower cased?
      * @param limit          Maximum limit for the {@code List} of {@link DynaBean}
      * @param useColumnLabel true if the column label should be used, otherwise false
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      * @since 1.8.3
@@ -195,7 +188,7 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Construct a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to column names in the result set will be
+     * Constructs a new {@link RowSetDynaClass} for the specified {@code ResultSet}. The property names corresponding to column names in the result set will be
      * lower cased.
      * </p>
      *
@@ -203,7 +196,6 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
      *
      * @param resultSet The result set to be wrapped
      * @param limit     The maximum for the size of the result.
-     *
      * @throws NullPointerException if {@code resultSet} is {@code null}
      * @throws SQLException         if the metadata for this result set cannot be introspected
      */
@@ -218,7 +210,6 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
      * </p>
      *
      * @param resultSet The {@code ResultSet} whose data is to be copied
-     *
      * @throws SQLException if an error is encountered copying the data
      */
     protected void copy(final ResultSet resultSet) throws SQLException {
@@ -247,7 +238,7 @@ public class RowSetDynaClass extends AbstractJdbcDynaClass {
 
     /**
      * <p>
-     * Return a {@code List} containing the {@link DynaBean}s that represent the contents of each {@code Row} from the {@code ResultSet} that was the basis of
+     * Gets a {@code List} containing the {@link DynaBean}s that represent the contents of each {@code Row} from the {@code ResultSet} that was the basis of
      * this {@link RowSetDynaClass} instance. These {@link DynaBean}s are disconnected from the database itself, so there is no problem with modifying the
      * contents of the list, or the values of the properties of these {@link DynaBean}s. However, it is the application's responsibility to persist any such
      * changes back to the database, if it so desires.

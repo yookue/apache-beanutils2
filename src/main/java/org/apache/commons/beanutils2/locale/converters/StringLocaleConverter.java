@@ -44,6 +44,13 @@ public class StringLocaleConverter extends BaseLocaleConverter<String> {
     public static class Builder extends BaseLocaleConverter.Builder<Builder, String> {
 
         /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // empty
+        }
+
+        /**
          * Gets a new instance.
          * <p>
          * Defaults construct a {@link LocaleConverter} that will throw a {@link ConversionException} if a conversion error occurs. The locale is the default
@@ -108,7 +115,7 @@ public class StringLocaleConverter extends BaseLocaleConverter<String> {
      * @param pattern The pattern is used for the conversion
      * @return The converted value
      * @throws ConversionException if conversion cannot be performed successfully
-     * @throws ParseException                                    if an error occurs
+     * @throws ParseException      if an error occurs
      */
     @Override
     protected String parse(final Object value, final String pattern) throws ParseException {

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -51,7 +52,7 @@ public abstract class BaseDynaBeanMapDecorator<K> implements Map<K, Object> {
     /**
      * Map.Entry implementation.
      */
-    private static class MapEntry<K> implements Map.Entry<K, Object> {
+    private static final class MapEntry<K> implements Map.Entry<K, Object> {
 
         private final K key;
         private final Object value;
@@ -62,12 +63,15 @@ public abstract class BaseDynaBeanMapDecorator<K> implements Map<K, Object> {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (!(o instanceof Map.Entry)) {
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof Map.Entry)) {
                 return false;
             }
-            final Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
-            return key.equals(e.getKey()) && (value == null ? e.getValue() == null : value.equals(e.getValue()));
+            final Map.Entry<?, ?> other = (Map.Entry<?, ?>) obj;
+            return Objects.equals(key, other.getKey()) && Objects.equals(value, other.getValue());
         }
 
         @Override
@@ -82,7 +86,7 @@ public abstract class BaseDynaBeanMapDecorator<K> implements Map<K, Object> {
 
         @Override
         public int hashCode() {
-            return key.hashCode() + (value == null ? 0 : value.hashCode());
+            return Objects.hash(key, value);
         }
 
         @Override
@@ -90,6 +94,7 @@ public abstract class BaseDynaBeanMapDecorator<K> implements Map<K, Object> {
             throw new UnsupportedOperationException();
         }
     }
+
     private final DynaBean dynaBean;
     private final boolean readOnly;
 
@@ -113,10 +118,7 @@ public abstract class BaseDynaBeanMapDecorator<K> implements Map<K, Object> {
      * @throws IllegalArgumentException if the {@link DynaBean} is null.
      */
     public BaseDynaBeanMapDecorator(final DynaBean dynaBean, final boolean readOnly) {
-        if (dynaBean == null) {
-            throw new IllegalArgumentException("DynaBean is null");
-        }
-        this.dynaBean = dynaBean;
+        this.dynaBean = Objects.requireNonNull(dynaBean, "dynaBean");
         this.readOnly = readOnly;
     }
 
@@ -251,8 +253,8 @@ public abstract class BaseDynaBeanMapDecorator<K> implements Map<K, Object> {
      * </p>
      *
      * <p>
-     * <b>N.B.</b>For {@link DynaBean}s whose associated {@link DynaClass} is a {@link MutableDynaClass} a new Set is created every time, otherwise the Set is
-     * created only once and cached.
+     * <strong>N.B.</strong>For {@link DynaBean}s whose associated {@link DynaClass} is a {@link MutableDynaClass} a new Set is created every time, otherwise
+     * the Set is created only once and cached.
      * </p>
      *
      * @return An unmodifiable set of the {@link DynaBean}s property names.
@@ -343,7 +345,7 @@ public abstract class BaseDynaBeanMapDecorator<K> implements Map<K, Object> {
      * @return String representation of the object
      */
     private String toString(final Object obj) {
-        return obj == null ? null : obj.toString();
+        return Objects.toString(obj, null);
     }
 
     /**

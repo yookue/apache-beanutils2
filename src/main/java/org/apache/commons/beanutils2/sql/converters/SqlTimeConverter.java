@@ -24,25 +24,25 @@ import java.util.TimeZone;
 import org.apache.commons.beanutils2.converters.DateTimeConverter;
 
 /**
- * {@link DateTimeConverter} implementation that handles conversion to and from <b>java.sql.Time</b> objects.
+ * {@link DateTimeConverter} implementation that handles conversion to and from <strong>java.sql.Time</strong> objects.
  * <p>
  * This implementation can be configured to handle conversion either by using java.sql.Time's default String conversion, or by using a Locale's default format
  * or by specifying a set of format patterns. See the {@link DateTimeConverter} documentation for further details.
  * <p>
- * Can be configured to either return a <i>default value</i> or throw a {@code ConversionException} if a conversion error occurs.
+ * Can be configured to either return a <em>default value</em> or throw a {@code ConversionException} if a conversion error occurs.
  *
  * @since 1.3
  */
 public final class SqlTimeConverter extends DateTimeConverter<Time> {
 
     /**
-     * Constructs a <b>java.sql.Time</b> <i>Converter</i> that throws a {@code ConversionException} if an error occurs.
+     * Constructs a <strong>java.sql.Time</strong> <em>Converter</em> that throws a {@code ConversionException} if an error occurs.
      */
     public SqlTimeConverter() {
     }
 
     /**
-     * Constructs a <b>java.sql.Time</b> <i>Converter</i> that returns a default value if an error occurs.
+     * Constructs a <strong>java.sql.Time</strong> <em>Converter</em> that returns a default value if an error occurs.
      *
      * @param defaultValue The default value to be returned if the value to be converted is missing or an error occurs converting the value.
      */
@@ -62,12 +62,6 @@ public final class SqlTimeConverter extends DateTimeConverter<Time> {
     }
 
     /**
-     * Gets a {@code DateFormat} for the Locale.
-     *
-     * @param locale   TODO
-     * @param timeZone TODO
-     *
-     * @return The DateFormat.
      * @since 1.8.0
      */
     @Override

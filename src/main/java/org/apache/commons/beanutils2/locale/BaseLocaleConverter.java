@@ -58,6 +58,13 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
         protected boolean useDefault;
 
         /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // empty
+        }
+
+        /**
          * Returns this instance cast as the exact subclass type.
          *
          * @return this instance cast as the exact subclass type.
@@ -78,7 +85,7 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
          * Sets the default value.
          *
          * @param defaultValue the default value.
-         * @return this
+         * @return {@code this} instance.
          */
         public B setDefault(final T defaultValue) {
             this.defaultValue = defaultValue;
@@ -89,7 +96,7 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
          * Sets the locale.
          *
          * @param locale the locale.
-         * @return this
+         * @return {@code this} instance.
          */
         public B setLocale(final Locale locale) {
             this.locale = locale;
@@ -100,7 +107,7 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
          * Sets the localized pattern.
          *
          * @param localizedPattern the localized pattern.
-         * @return this
+         * @return {@code this} instance.
          */
         public B setLocalizedPattern(final boolean localizedPattern) {
             this.localizedPattern = localizedPattern;
@@ -111,7 +118,7 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
          * Sets the pattern.
          *
          * @param pattern the pattern.
-         * @return this
+         * @return {@code this} instance.
          */
         public B setPattern(final String pattern) {
             this.pattern = pattern;
@@ -122,7 +129,7 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
          * Sets the use of default.
          *
          * @param useDefault the use of default.
-         * @return this
+         * @return {@code this} instance.
          */
         public B setUseDefault(final boolean useDefault) {
             this.useDefault = useDefault;
@@ -197,7 +204,6 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
      * @param type  Data type to which this value should be converted
      * @param value The input object to be converted
      * @return The converted value
-     *
      * @throws ConversionException if conversion cannot be performed successfully
      */
     @Override
@@ -212,7 +218,6 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
      * @param value   is the input object to be converted
      * @param pattern is the pattern is used for the conversion; if null is passed then the default pattern associated with the converter object will be used.
      * @return The converted value
-     *
      * @throws ConversionException if conversion cannot be performed successfully
      */
     @Override
@@ -222,7 +227,7 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
             if (useDefault) {
                 return getDefaultAs(targetType);
             }
-            // symmetric beanutils function allows null
+            // symmetric BeanUtils function allows null
             // so do not: throw new ConversionException("No value specified");
             LOG.debug("Null value specified for conversion, returning null");
             return null;
@@ -249,7 +254,6 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
      *
      * @param value The input object to be converted
      * @return The converted value
-     *
      * @throws ConversionException if conversion cannot be performed successfully
      */
     public Object convert(final Object value) {
@@ -262,7 +266,6 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
      * @param value   The input object to be converted
      * @param pattern The pattern is used for the conversion
      * @return The converted value
-     *
      * @throws ConversionException if conversion cannot be performed successfully
      */
     public T convert(final Object value, final String pattern) {
@@ -287,8 +290,7 @@ public abstract class BaseLocaleConverter<T> implements LocaleConverter<T> {
      * @param value   The input object to be converted
      * @param pattern The pattern is used for the conversion
      * @return The converted value
-     *
      * @throws ParseException if conversion cannot be performed successfully
      */
-    abstract protected T parse(Object value, String pattern) throws ParseException;
+    protected abstract T parse(Object value, String pattern) throws ParseException;
 }

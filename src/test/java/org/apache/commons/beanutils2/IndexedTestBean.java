@@ -22,7 +22,6 @@ import java.util.List;
 
 /**
  * Indexed Properties Test bean for JUnit tests for the "beanutils" component.
- *
  */
 public class IndexedTestBean {
 
@@ -31,7 +30,7 @@ public class IndexedTestBean {
     private ArrayList<Object> arrayList;
 
     /**
-     * Default Constructor.
+     * Constructs a new instance.
      */
     public IndexedTestBean() {
     }

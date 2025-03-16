@@ -17,7 +17,6 @@
 
 package org.apache.commons.beanutils2.sql;
 
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.beanutils2.DynaBean;
 import org.apache.commons.beanutils2.DynaClass;
@@ -38,9 +38,7 @@ import org.apache.commons.beanutils2.DynaProperty;
  * Provides common logic for JDBC implementations of {@link DynaClass}.
  * </p>
  */
-abstract class AbstractJdbcDynaClass implements DynaClass, Serializable {
-
-    private static final long serialVersionUID = 1L;
+abstract class AbstractJdbcDynaClass implements DynaClass {
 
     /**
      * Cross Reference for column name --> dyna property name (needed when lowerCase option is true)
@@ -128,10 +126,10 @@ abstract class AbstractJdbcDynaClass implements DynaClass, Serializable {
     }
 
     /**
-     * Get the table column name for the specified property name.
+     * Gets the table column name for the specified property name.
      *
      * @param name The property name
-     * @return The column name (which can be different if the <i>lowerCase</i> option is used).
+     * @return The column name (which can be different if the <em>lowerCase</em> option is used).
      */
     protected String getColumnName(final String name) {
         if (columnNameXref != null && columnNameXref.containsKey(name)) {
@@ -142,7 +140,7 @@ abstract class AbstractJdbcDynaClass implements DynaClass, Serializable {
 
     /**
      * <p>
-     * Return an array of {@code PropertyDescriptor} for the properties currently defined in this DynaClass. If no properties are defined, a zero-length array
+     * Gets an array of {@code PropertyDescriptor} for the properties currently defined in this DynaClass. If no properties are defined, a zero-length array
      * will be returned.
      * </p>
      */
@@ -153,25 +151,21 @@ abstract class AbstractJdbcDynaClass implements DynaClass, Serializable {
 
     /**
      * <p>
-     * Return a property descriptor for the specified property, if it exists; otherwise, return {@code null}.
+     * Gets a property descriptor for the specified property, if it exists; otherwise, return {@code null}.
      * </p>
      *
      * @param name Name of the dynamic property for which a descriptor is requested
-     *
      * @throws IllegalArgumentException if no property name is specified
      */
     @Override
     public DynaProperty getDynaProperty(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("No property name specified");
-        }
-        return propertiesMap.get(name);
+        return propertiesMap.get(Objects.requireNonNull(name, "name"));
 
     }
 
     /**
      * <p>
-     * Return the name of this DynaClass (analogous to the {@code getName()</code> method of <code>java.lang.Class}, which allows the same {@code DynaClass}
+     * Gets the name of this DynaClass (analogous to the {@code getName()</code> method of <code>java.lang.Class}, which allows the same {@code DynaClass}
      * implementation class to support different dynamic classes, with different sets of properties.
      * </p>
      */
@@ -182,7 +176,7 @@ abstract class AbstractJdbcDynaClass implements DynaClass, Serializable {
     }
 
     /**
-     * Get a column value from a {@link ResultSet} for the specified name.
+     * Gets a column value from a {@link ResultSet} for the specified name.
      *
      * @param resultSet The result set
      * @param name      The property name
@@ -221,7 +215,6 @@ abstract class AbstractJdbcDynaClass implements DynaClass, Serializable {
      * </p>
      *
      * @param resultSet The {@code resultSet} whose metadata is to be introspected
-     *
      * @throws SQLException if an error is encountered processing the result set metadata
      */
     protected void introspect(final ResultSet resultSet) throws SQLException {
