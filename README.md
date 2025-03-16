@@ -66,9 +66,9 @@ Alternatively, you can pull it from the central Maven repositories:
 
 ```xml
 <dependency>
-  <groupId>org.apache.commons</groupId>
-  <artifactId>commons-beanutils2</artifactId>
-  <version>2.0.0-M1</version>
+    <groupId>com.yookue.forkextension.apache</groupId>
+    <artifactId>commons-beanutils2</artifactId>
+    <version>2.0.1</version>
 </dependency>
 ```
 
