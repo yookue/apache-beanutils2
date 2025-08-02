@@ -24,7 +24,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.yookue.forkextension.apache</groupId>
   <artifactId>commons-beanutils2</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
   <name>Apache Commons BeanUtils</name>
 
   <inceptionYear>2000</inceptionYear>
@@ -71,12 +71,12 @@
     <commons.jacoco.complexityRatio>0.61</commons.jacoco.complexityRatio>
     <commons.jacoco.lineRatio>0.72</commons.jacoco.lineRatio>
     <!-- Dependencies -->
-    <commons.collections.version>4.5.0-M3</commons.collections.version>
+    <commons.collections.version>4.5.0</commons.collections.version>
 
     <!-- David Hsing added on 20240623 -->
-    <maven-javadoc-plugin.version>3.10.1</maven-javadoc-plugin.version>
-    <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
-    <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
+    <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+    <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+    <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
   </properties>
 
   <issueManagement>
